@@ -21,6 +21,12 @@ $plan = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'0.1.0-preview')
 $result = Set-SemanticReleaseJsonVersion -Path ./project.json -Label $label -Confirm:$false
 ```
 
+## GitHub release automation
+
+- `main` is the stable release branch. Pushing a merged release change to `main` runs `.github/workflows/Publish.yml`, publishes the stable module, creates the verified `chore(release): <version>` commit, creates the annotated version tag, and prepares the next prerelease version on `develop`.
+- `develop` is the prerelease branch. Run the same workflow with `workflow_dispatch` from `develop` when you want to publish the current prerelease and bump `develop` to the next preview version.
+- The workflow expects the repository secret `PSGALLERY_API` so GitHub Actions can publish to PSGallery.
+
 ## Agentic Copilot workflow
 
 Follow this workflow when working with Copilot in this repository.

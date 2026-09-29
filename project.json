@@ -8,10 +8,18 @@
   ],
   "Manifest": {
     "Author": "Stiwi Gabriel Courage",
+    "Copyright": "Copyright (c) 2026 Stiwi Gabriel Courage",
     "PowerShellHostVersion": "7.4",
     "GUID": "f14bdd86-7629-4a9b-8716-b5f0e09a571f",
-    "Tags": [],
-    "ProjectUri": ""
+    "Tags": [
+      "PowerShell",
+      "SemanticRelease",
+      "SemVer",
+      "ConventionalCommits",
+      "ReleaseAutomation"
+    ],
+    "ProjectUri": "https://github.com/stiwicourage/SemanticRelease",
+    "ReleaseNotes": "https://github.com/stiwicourage/SemanticRelease/blob/main/RELEASE_NOTE.md"
   },
   "Package": {
     "Types": [
