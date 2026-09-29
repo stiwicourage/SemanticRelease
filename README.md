@@ -27,6 +27,12 @@ $result = Set-SemanticReleaseJsonVersion -Path ./project.json -Label $label -Con
 - `develop` is the prerelease branch. Run the same workflow with `workflow_dispatch` from `develop` when you want to publish the current prerelease and bump `develop` to the next preview version.
 - The workflow expects the repository secret `PSGALLERY_API` so GitHub Actions can publish to PSGallery.
 
+## GitHub validation workflows
+
+- `.github/workflows/Tests.yml` mirrors the NovaModuleTools CI flow for build, unit tests, integration tests, artifacts, and optional CodeScene upload when the required GitHub variables and secrets are configured.
+- `.github/workflows/powershell.yml` uploads SARIF results from `PSScriptAnalyzer`.
+- `.github/workflows/dependency-review.yml` runs GitHub dependency review on pull requests to `develop`.
+
 ## Agentic Copilot workflow
 
 Follow this workflow when working with Copilot in this repository.

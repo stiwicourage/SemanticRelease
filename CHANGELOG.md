@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Source-mirrored Pester coverage for the new public commands and private release/shared helpers.
 - PlatyPS command help for the initial public module surface under `docs/SemanticRelease/en-US/`.
 - GitHub publish automation mirrored from NovaModuleTools, including verified release commits/tags on `main` and prerelease preparation on `develop`.
+- GitHub test, dependency-review, PSScriptAnalyzer, and optional CodeScene workflows mirrored from NovaModuleTools for branch validation and CI artifacts.
 
 ### Changed
 

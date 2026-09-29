@@ -14,6 +14,7 @@ Before opening a pull request:
 - keep local quality checks ordered as ScriptAnalyzer, then `Invoke-NovaBuild`, then `Invoke-NovaTest`, then `Test-NovaBuild` when your project defines both test flows
 - use `Invoke-NovaTest` for unit validation and `Test-NovaBuild` for build-validation integration runs; do not validate with direct `Invoke-Pester`
 - stable releases publish from `main` through `.github/workflows/Publish.yml`; prerelease publishes run from `develop` via `workflow_dispatch`
+- GitHub Actions also runs `.github/workflows/Tests.yml`, `.github/workflows/powershell.yml`, and `.github/workflows/dependency-review.yml`; keep workflow-related changes aligned with those checks
 - keep public command unit ownership in `tests/public/<Command>.Tests.ps1`
 - keep per-command public integration ownership in `tests/public/<Command>.Integration.Tests.ps1` when built-module behavior itself needs validation
 - for destructive or environment-coupled commands, prefer safe `-WhatIf` integration coverage when appropriate
