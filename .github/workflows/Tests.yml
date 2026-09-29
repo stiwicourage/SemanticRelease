@@ -101,7 +101,9 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - test-and-coverage
-    if: ${{ needs.test-and-coverage.result == 'success' && github.event_name == 'pull_request' && vars.CS_URL != '' && vars.CS_PROJECT_ID != '' && secrets.CS_ACCESS_TOKEN != '' }}
+    if: ${{ needs.test-and-coverage.result == 'success' && github.event_name == 'pull_request' && vars.CS_URL != '' && vars.CS_PROJECT_ID != '' }}
+    env:
+      CS_ACCESS_TOKEN: ${{ secrets.CS_ACCESS_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -115,9 +117,10 @@ jobs:
           path: coverage/
 
       - name: Check coverage gates in CodeScene
+        if: env.CS_ACCESS_TOKEN != ''
         uses: ./.github/actions/check-coverage
         with:
-          access-token: ${{ secrets.CS_ACCESS_TOKEN }}
+          access-token: ${{ env.CS_ACCESS_TOKEN }}
           project-url: ${{ format('{0}/v2/projects/{1}', vars.CS_URL, vars.CS_PROJECT_ID) }}
           coverage-files: '**/coverage.xml'
 
@@ -125,7 +128,9 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - test-and-coverage
-    if: ${{ needs.test-and-coverage.result == 'success' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref_name == 'develop')) && vars.CS_URL != '' && vars.CS_PROJECT_ID != '' && secrets.CS_ACCESS_TOKEN != '' }}
+    if: ${{ needs.test-and-coverage.result == 'success' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref_name == 'develop')) && vars.CS_URL != '' && vars.CS_PROJECT_ID != '' }}
+    env:
+      CS_ACCESS_TOKEN: ${{ secrets.CS_ACCESS_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -139,6 +144,7 @@ jobs:
           path: .
 
       - name: Install CodeScene coverage CLI
+        if: env.CS_ACCESS_TOKEN != ''
         shell: bash
         run: |
           set -euo pipefail
@@ -147,8 +153,9 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
       - name: Upload coverage to CodeScene and trigger analysis
+        if: env.CS_ACCESS_TOKEN != ''
         env:
           CS_URL: ${{ vars.CS_URL }}
           CS_PROJECT_ID: ${{ vars.CS_PROJECT_ID }}
-          CS_ACCESS_TOKEN: ${{ secrets.CS_ACCESS_TOKEN }}
+          CS_ACCESS_TOKEN: ${{ env.CS_ACCESS_TOKEN }}
         run: ./scripts/build/ci/Invoke-CodeSceneAnalysis.ps1 -UploadCoverage -TriggerAnalysis
