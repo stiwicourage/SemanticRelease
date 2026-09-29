@@ -2,6 +2,25 @@
 
 A PowerShell-native semantic release toolkit for automated versioning and release workflows based on Git history and Conventional Commits.
 
+## Initial public commands
+
+The initial module surface provides the reusable semantic-release core for Git-based PowerShell workflows:
+
+- `Get-SemanticReleaseCommitRange` detects the last version tag and returns the commit-range basis.
+- `Get-SemanticReleaseCommitMessage` collects commit messages since the last tag, or from the full history when no tag exists.
+- `Get-SemanticReleaseLabel` infers the semantic-release label (`Major`, `Minor`, or `Patch`) from commit messages.
+- `Get-SemanticReleaseNextVersion` calculates the next semantic version, including preview and stable-release transitions.
+- `Set-SemanticReleaseJsonVersion` updates a top-level JSON version key with `ShouldProcess` support.
+
+Example workflow:
+
+```powershell
+$messages = Get-SemanticReleaseCommitMessage
+$label = Get-SemanticReleaseLabel -Message $messages
+$plan = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'0.1.0-preview') -Label $label -StableRelease
+$result = Set-SemanticReleaseJsonVersion -Path ./project.json -Label $label -Confirm:$false
+```
+
 ## Agentic Copilot workflow
 
 Follow this workflow when working with Copilot in this repository.

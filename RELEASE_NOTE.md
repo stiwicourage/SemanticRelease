@@ -7,7 +7,9 @@ This file summarizes public cmdlet, CLI, configuration, and migration changes fo
 
 ### Added
 
-No public API or workflow changes in this release. Internal maintenance only.
+- Added the initial reusable `SemanticRelease` PowerShell module core.
+- Added public commands for commit-range detection, commit collection, release-label inference, next-version planning, and JSON version updates.
+- Added command help and mirrored automated tests for the initial module surface.
 
 ### Changed
 
