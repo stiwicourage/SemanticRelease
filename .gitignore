@@ -1,0 +1,7 @@
+# CI/local test artifacts
+testResults.xml
+coverage.xml
+artifacts/
+dist/
+run.ps1
+reload.ps1

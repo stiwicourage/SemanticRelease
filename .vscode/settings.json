@@ -1,0 +1,10 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "/project.json"
+      ],
+      "url": "https://www.novamoduletools.com/schema/v3/project.json"
+    }
+  ]
+}
