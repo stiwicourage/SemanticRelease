@@ -11,6 +11,7 @@ The initial module surface provides the reusable semantic-release core for Git-b
 - `Get-SemanticReleaseLabel` infers the semantic-release label (`Major`, `Minor`, or `Patch`) from commit messages.
 - `Get-SemanticReleaseNextVersion` calculates the next semantic version, including preview and stable-release transitions.
 - `Set-SemanticReleaseJsonVersion` updates a top-level JSON version key with `ShouldProcess` support.
+- `Set-SemanticReleasePropertiesVersion` updates a version property in Java-style `.properties` files such as `gradle.properties`.
 
 Example workflow:
 
@@ -19,6 +20,7 @@ $messages = Get-SemanticReleaseCommitMessage
 $label = Get-SemanticReleaseLabel -Message $messages
 $plan = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'0.1.0-preview') -Label $label -StableRelease
 $result = Set-SemanticReleaseJsonVersion -Path ./project.json -Label $label -Confirm:$false
+$gradle = Set-SemanticReleasePropertiesVersion -Path ./gradle.properties -Key version -Label $label -Confirm:$false
 ```
 
 ## GitHub release automation
