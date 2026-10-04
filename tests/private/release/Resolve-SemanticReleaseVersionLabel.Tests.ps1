@@ -23,4 +23,8 @@ Describe 'Resolve-SemanticReleaseVersionLabel' {
     It 'defaults to Patch when nothing matches' {
         Resolve-SemanticReleaseVersionLabel -Message @('chore: cleanup') | Should -Be 'Patch'
     }
+
+    It 'defaults to Patch when no commit messages are available' {
+        Resolve-SemanticReleaseVersionLabel -Message @() | Should -Be 'Patch'
+    }
 }

@@ -1,7 +1,7 @@
 function Resolve-SemanticReleaseVersionLabel {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)][string[]]$Message
+        [AllowEmptyCollection()][string[]]$Message = @()
     )
 
     if ($Message | Where-Object { $_ -match '(?im)BREAKING CHANGE|^[a-z]+(\(.+\))?!:' }) {

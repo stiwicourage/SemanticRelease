@@ -1,7 +1,7 @@
 function Get-SemanticReleaseLabel {
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)][string[]]$Message
+        [AllowEmptyCollection()][string[]]$Message = @()
     )
 
     return Resolve-SemanticReleaseVersionLabel -Message $Message

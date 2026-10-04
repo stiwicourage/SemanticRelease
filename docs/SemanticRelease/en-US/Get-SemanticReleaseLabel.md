@@ -20,7 +20,7 @@ Infers a semantic-release label from commit messages.
 ### __AllParameterSets
 
 ```
-Get-SemanticReleaseLabel [-Message] <string[]>
+Get-SemanticReleaseLabel [[-Message] <string[]>]
 ```
 
 ## ALIASES
@@ -53,7 +53,7 @@ Minor
 
 ### -Message
 
-Specifies the commit messages to evaluate.
+Specifies the commit messages to evaluate. An empty commit-message set is allowed and defaults to `Patch`.
 
 ```yaml
 Type: System.String[]
@@ -63,7 +63,7 @@ Aliases: []
 ParameterSets:
 - Name: (All)
   Position: 0
-  IsRequired: true
+  IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
   ValueFromRemainingArguments: false

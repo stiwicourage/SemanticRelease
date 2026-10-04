@@ -13,4 +13,10 @@ Describe 'Get-SemanticReleaseLabel' {
         $result | Should -Be 'Minor'
         Should -Invoke Resolve-SemanticReleaseVersionLabel -Times 1 -Exactly
     }
+
+    It 'accepts an empty commit-message set' {
+        $result = Get-SemanticReleaseLabel -Message @()
+
+        $result | Should -Be 'Patch'
+    }
 }

@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Initial `SemanticRelease` module core with reusable Git commit-range discovery, commit collection, release-label inference, semantic-version planning, and JSON version updates.
 - Added `Set-SemanticReleasePropertiesVersion` for commit-driven updates of Java-style `.properties` version keys such as `gradle.properties`.
+- Added `Update-SemanticReleaseVersion` to infer stable or preview version bumps from Git commit history and apply them directly to JSON or `.properties` version files.
 - Source-mirrored Pester coverage for the new public commands and private release/shared helpers.
 - PlatyPS command help for the initial public module surface under `docs/SemanticRelease/en-US/`.
 - GitHub publish automation mirrored from NovaModuleTools, including verified release commits/tags on `main` and prerelease preparation on `develop`.
