@@ -1,17 +1,25 @@
 {
   "ProjectName": "SemanticRelease",
   "Description": "A PowerShell-native semantic release toolkit for automated versioning and release workflows based on Git history and Conventional Commits.",
-  "Version": "0.1.0-preview",
+  "Version": "0.1.0-preview03",
   "Preamble": [
     "Set-StrictMode -Version Latest",
     "$ErrorActionPreference = 'Stop'"
   ],
   "Manifest": {
     "Author": "Stiwi Gabriel Courage",
+    "Copyright": "Copyright (c) 2026 Stiwi Gabriel Courage",
     "PowerShellHostVersion": "7.4",
     "GUID": "f14bdd86-7629-4a9b-8716-b5f0e09a571f",
-    "Tags": [],
-    "ProjectUri": ""
+    "Tags": [
+      "PowerShell",
+      "SemanticRelease",
+      "SemVer",
+      "ConventionalCommits",
+      "ReleaseAutomation"
+    ],
+    "ProjectUri": "https://github.com/stiwicourage/SemanticRelease",
+    "ReleaseNotes": "https://github.com/stiwicourage/SemanticRelease/blob/main/RELEASE_NOTE.md"
   },
   "Package": {
     "Types": [
@@ -24,7 +32,7 @@
   },
   "Pester": {
     "CodeCoverage": {
-      "Enabled": false,
+      "Enabled": true,
       "Path": [
         "src/public/*.ps1",
         "src/private/**/*.ps1",

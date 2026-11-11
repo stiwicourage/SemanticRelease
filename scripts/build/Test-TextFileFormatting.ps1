@@ -31,6 +31,7 @@ function Get-TextFileFormattingViolationList {
 }
 
 function Get-TextFileFormattingTargetFileList {
+    [OutputType([object[]])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$ProjectRoot
@@ -50,6 +51,7 @@ function Get-TextFileFormattingTargetFileList {
 }
 
 function Test-TextFileFormattingCandidate {
+    [OutputType([bool])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][System.IO.FileInfo]$FileInfo
@@ -76,6 +78,7 @@ function Test-TextFileFormattingCandidate {
 }
 
 function Test-TextFileFormattingContentHasSingleTrailingNewline {
+    [OutputType([bool])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Path
@@ -94,6 +97,7 @@ function Test-TextFileFormattingContentHasSingleTrailingNewline {
 }
 
 function Get-TextFileFormattingRelativePath {
+    [OutputType([string])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$ProjectRoot,

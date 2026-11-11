@@ -2,6 +2,61 @@
 
 A PowerShell-native semantic release toolkit for automated versioning and release workflows based on Git history and Conventional Commits.
 
+## Initial public commands
+
+The initial module surface provides the reusable semantic-release core for Git-based PowerShell workflows:
+
+- `Get-SemanticReleaseCommitRange` detects the last version tag and returns the commit-range basis.
+- `Get-SemanticReleaseCommitMessage` collects commit messages since the last tag, or from the full history when no tag exists.
+- `Get-SemanticReleaseLabel` infers the semantic-release label (`Major`, `Minor`, or `Patch`) from commit messages.
+- `Get-SemanticReleaseNextVersion` calculates the next semantic version, including preview and stable-release transitions.
+- `Set-SemanticReleaseJsonVersion` updates a top-level JSON version key with `ShouldProcess` support.
+- `Get-SemanticReleasePropertiesVersion` reads a version property from a Java-style `.properties` file without changing it.
+- `Set-SemanticReleasePropertiesVersion` updates a version property in Java-style `.properties` files such as `gradle.properties`.
+- `Update-SemanticReleaseVersion` infers the next stable or preview version from Git commit history and updates a JSON or `.properties` version file in one step.
+
+Example workflow:
+
+```powershell
+$messages = Get-SemanticReleaseCommitMessage
+$label = Get-SemanticReleaseLabel -Message $messages
+$plan = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'0.1.0-preview') -Label $label -StableRelease
+$result = Set-SemanticReleaseJsonVersion -Path ./project.json -Label $label -Confirm:$false
+$gradle = Set-SemanticReleasePropertiesVersion -Path ./gradle.properties -Key version -Label $label -Confirm:$false
+$auto = Update-SemanticReleaseVersion -Path ./gradle.properties -ProjectRoot . -Preview -Confirm:$false
+```
+
+## Azure DevOps pipeline usage
+
+SemanticRelease only decides and writes the version. Git commits, tags, pushes, builds, and publishing stay in your own pipeline scripts, so the same commands work for Gradle/Java projects on Azure DevOps.
+
+- Check out with `fetchDepth: 0` so tags and full history are available for commit-range detection.
+- Install the module with `Save-Module -Name SemanticRelease -Path $(Pipeline.Workspace)/.powershell-modules -AllowPrerelease` and import it from that path.
+
+```powershell
+$current = (Get-SemanticReleasePropertiesVersion -Path ./gradle.properties).Version
+$messages = @(Get-SemanticReleaseCommitMessage -ProjectRoot .)
+$label = Get-SemanticReleaseLabel -Message $messages
+$release = Set-SemanticReleasePropertiesVersion -Path ./gradle.properties -Label $label -ReleaseType Stable -Confirm:$false
+$release.NewVersion
+```
+
+Then build, commit, tag, and push with your pipeline's own git steps, and prepare the next preview version with `Get-SemanticReleaseNextVersion -Label Patch -PreviewRelease`.
+
+## GitHub release automation
+
+- `.github/workflows/Publish.yml` is a thin caller of the shared `stiwicourage/powershell-ci` publish workflow; it runs `Test-NovaBuild` before publishing.
+- `main` is the stable release branch. Pushing a merged release change to `main` publishes the stable module, creates the verified `chore(release): <version>` commit, creates the annotated version tag, and prepares the next prerelease version on `develop`.
+- `develop` is the prerelease branch. Run the same workflow with `workflow_dispatch` from `develop` when you want to publish the current prerelease and bump `develop` to the next preview version.
+- The workflow expects the repository secret `PSGALLERY_API` so GitHub Actions can publish to PSGallery.
+
+## GitHub validation workflows
+
+All workflows are thin callers of the reusable workflows in `stiwicourage/powershell-ci`.
+
+- `.github/workflows/Tests.yml` runs build, unit tests, integration tests, changelog validation, and artifacts. CodeScene is disabled in `Tests.yml` (`codescene-enabled: false`) until `CS_URL` and `CS_PROJECT_ID` are configured as repository variables; set it to `true` to enable the CodeScene gates and analysis.
+- `.github/workflows/Security.yml` runs CodeQL, uploads SARIF results from `PSScriptAnalyzer`, and runs GitHub dependency review on pull requests.
+
 ## Agentic Copilot workflow
 
 Follow this workflow when working with Copilot in this repository.
