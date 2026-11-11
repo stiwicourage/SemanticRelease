@@ -214,4 +214,5 @@ Returns a result object with `Path`, `Target`, `Key`, `PreviousVersion`, `NewVer
 ## RELATED LINKS
 
 - [Get-SemanticReleaseNextVersion](./Get-SemanticReleaseNextVersion.md)
+- [Get-SemanticReleasePropertiesVersion](./Get-SemanticReleasePropertiesVersion.md)
 - [Set-SemanticReleaseJsonVersion](./Set-SemanticReleaseJsonVersion.md)

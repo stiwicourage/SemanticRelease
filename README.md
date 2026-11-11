@@ -11,6 +11,7 @@ The initial module surface provides the reusable semantic-release core for Git-b
 - `Get-SemanticReleaseLabel` infers the semantic-release label (`Major`, `Minor`, or `Patch`) from commit messages.
 - `Get-SemanticReleaseNextVersion` calculates the next semantic version, including preview and stable-release transitions.
 - `Set-SemanticReleaseJsonVersion` updates a top-level JSON version key with `ShouldProcess` support.
+- `Get-SemanticReleasePropertiesVersion` reads a version property from a Java-style `.properties` file without changing it.
 - `Set-SemanticReleasePropertiesVersion` updates a version property in Java-style `.properties` files such as `gradle.properties`.
 - `Update-SemanticReleaseVersion` infers the next stable or preview version from Git commit history and updates a JSON or `.properties` version file in one step.
 
@@ -24,6 +25,23 @@ $result = Set-SemanticReleaseJsonVersion -Path ./project.json -Label $label -Con
 $gradle = Set-SemanticReleasePropertiesVersion -Path ./gradle.properties -Key version -Label $label -Confirm:$false
 $auto = Update-SemanticReleaseVersion -Path ./gradle.properties -ProjectRoot . -Preview -Confirm:$false
 ```
+
+## Azure DevOps pipeline usage
+
+SemanticRelease only decides and writes the version. Git commits, tags, pushes, builds, and publishing stay in your own pipeline scripts, so the same commands work for Gradle/Java projects on Azure DevOps.
+
+- Check out with `fetchDepth: 0` so tags and full history are available for commit-range detection.
+- Install the module with `Save-Module -Name SemanticRelease -Path $(Pipeline.Workspace)/.powershell-modules -AllowPrerelease` and import it from that path.
+
+```powershell
+$current = (Get-SemanticReleasePropertiesVersion -Path ./gradle.properties).Version
+$messages = @(Get-SemanticReleaseCommitMessage -ProjectRoot .)
+$label = Get-SemanticReleaseLabel -Message $messages
+$release = Set-SemanticReleasePropertiesVersion -Path ./gradle.properties -Label $label -ReleaseType Stable -Confirm:$false
+$release.NewVersion
+```
+
+Then build, commit, tag, and push with your pipeline's own git steps, and prepare the next preview version with `Get-SemanticReleaseNextVersion -Label Patch -PreviewRelease`.
 
 ## GitHub release automation
 
