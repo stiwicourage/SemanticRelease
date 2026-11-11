@@ -45,15 +45,17 @@ Then build, commit, tag, and push with your pipeline's own git steps, and prepar
 
 ## GitHub release automation
 
-- `main` is the stable release branch. Pushing a merged release change to `main` runs `.github/workflows/Publish.yml`, publishes the stable module, creates the verified `chore(release): <version>` commit, creates the annotated version tag, and prepares the next prerelease version on `develop`.
+- `.github/workflows/Publish.yml` is a thin caller of the shared `stiwicourage/powershell-ci` publish workflow; it runs `Test-NovaBuild` before publishing.
+- `main` is the stable release branch. Pushing a merged release change to `main` publishes the stable module, creates the verified `chore(release): <version>` commit, creates the annotated version tag, and prepares the next prerelease version on `develop`.
 - `develop` is the prerelease branch. Run the same workflow with `workflow_dispatch` from `develop` when you want to publish the current prerelease and bump `develop` to the next preview version.
 - The workflow expects the repository secret `PSGALLERY_API` so GitHub Actions can publish to PSGallery.
 
 ## GitHub validation workflows
 
-- `.github/workflows/Tests.yml` mirrors the NovaModuleTools CI flow for build, unit tests, integration tests, artifacts, and optional CodeScene upload when the required GitHub variables and secrets are configured.
-- `.github/workflows/powershell.yml` uploads SARIF results from `PSScriptAnalyzer`.
-- `.github/workflows/dependency-review.yml` runs GitHub dependency review on pull requests to `develop`.
+All workflows are thin callers of the reusable workflows in `stiwicourage/powershell-ci`.
+
+- `.github/workflows/Tests.yml` runs build, unit tests, integration tests, changelog validation, artifacts, and optional CodeScene upload when the required GitHub variables and secrets are configured.
+- `.github/workflows/Security.yml` runs CodeQL, uploads SARIF results from `PSScriptAnalyzer`, and runs GitHub dependency review on pull requests.
 
 ## Agentic Copilot workflow
 
