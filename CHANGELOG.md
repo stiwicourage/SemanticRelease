@@ -8,6 +8,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.1.0] - 2026-11-11
+
+### Added
+
 - Initial `SemanticRelease` module core with reusable Git commit-range discovery, commit collection, release-label inference, semantic-version planning, and JSON version updates.
 - Added `Set-SemanticReleasePropertiesVersion` for commit-driven updates of Java-style `.properties` version keys such as `gradle.properties`.
 - Added `Get-SemanticReleasePropertiesVersion` to read the current version from a Java-style `.properties` file such as `gradle.properties` without modifying it.
@@ -21,10 +35,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - GitHub workflows now call the shared `stiwicourage/powershell-ci` reusable workflows instead of local copies; the local `.github/actions/` and `scripts/build/ci/` helpers, `powershell.yml` and `dependency-review.yml` were replaced by `Security.yml` (adds CodeQL), and the scheduled test run is now daily.
 
-### Deprecated
-
-### Removed
-
-### Fixed
-
-### Security
