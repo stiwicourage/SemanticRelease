@@ -54,7 +54,7 @@ Then build, commit, tag, and push with your pipeline's own git steps, and prepar
 
 All workflows are thin callers of the reusable workflows in `stiwicourage/powershell-ci`.
 
-- `.github/workflows/Tests.yml` runs build, unit tests, integration tests, changelog validation, artifacts, and optional CodeScene upload when the required GitHub variables and secrets are configured.
+- `.github/workflows/Tests.yml` runs build, unit tests, integration tests, changelog validation, and artifacts. CodeScene is disabled in `Tests.yml` (`codescene-enabled: false`) until `CS_URL` and `CS_PROJECT_ID` are configured as repository variables; set it to `true` to enable the CodeScene gates and analysis.
 - `.github/workflows/Security.yml` runs CodeQL, uploads SARIF results from `PSScriptAnalyzer`, and runs GitHub dependency review on pull requests.
 
 ## Agentic Copilot workflow
