@@ -1,4 +1,5 @@
 function Resolve-SemanticReleaseReleaseOption {
+    [OutputType([hashtable])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$ReleaseType

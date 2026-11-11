@@ -1,4 +1,5 @@
 function Resolve-SemanticReleaseVersionLabel {
+    [OutputType([string])]
     [CmdletBinding()]
     param(
         [AllowEmptyCollection()][string[]]$Message = @()

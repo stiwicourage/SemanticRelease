@@ -36,6 +36,7 @@ function Resolve-SemanticReleaseVersionPart {
 }
 
 function Test-SemanticReleaseShouldFinalizePrereleaseTarget {
+    [OutputType([bool])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][semver]$CurrentVersion,
@@ -50,6 +51,7 @@ function Test-SemanticReleaseShouldFinalizePrereleaseTarget {
 }
 
 function Get-SemanticReleaseTargetLabelForPrerelease {
+    [OutputType([string])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][semver]$CurrentVersion

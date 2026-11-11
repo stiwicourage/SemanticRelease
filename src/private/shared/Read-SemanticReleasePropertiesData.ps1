@@ -1,4 +1,5 @@
 function Read-SemanticReleasePropertiesData {
+    [OutputType([hashtable])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$PropertiesPath,
@@ -27,6 +28,7 @@ function Read-SemanticReleasePropertiesData {
 }
 
 function Find-SemanticReleasePropertyData {
+    [OutputType([hashtable])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string[]]$Lines,

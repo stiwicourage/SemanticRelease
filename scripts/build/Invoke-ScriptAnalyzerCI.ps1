@@ -25,6 +25,7 @@ function Test-IsGeneratedAnalysisPath {
 }
 
 function Get-ScriptAnalyzerInputPathList {
+    [OutputType([object[]], [string])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Path,

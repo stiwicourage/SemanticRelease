@@ -33,6 +33,7 @@ function Get-SemanticReleaseVersionUpdateContext {
 }
 
 function Get-SemanticReleaseVersionFileContext {
+    [OutputType([hashtable])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$Path,
@@ -72,6 +73,7 @@ function Get-SemanticReleaseVersionFileContext {
 }
 
 function Get-SemanticReleaseVersionTargetKey {
+    [OutputType([string])]
     [CmdletBinding()]
     param(
         [AllowEmptyString()][string]$Key,
@@ -86,6 +88,7 @@ function Get-SemanticReleaseVersionTargetKey {
 }
 
 function Get-SemanticReleaseVersionUpdateReleaseOption {
+    [OutputType([hashtable])]
     [CmdletBinding()]
     param(
         [switch]$PreviewRelease
@@ -104,6 +107,7 @@ function Get-SemanticReleaseVersionUpdateReleaseOption {
 }
 
 function Get-SemanticReleaseVersionUpdateChangeInfo {
+    [OutputType([hashtable])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][hashtable]$FileContext,

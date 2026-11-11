@@ -18,6 +18,7 @@ function Resolve-SemanticReleasePreReleaseLabel {
 }
 
 function Resolve-SemanticReleasePreviewLabel {
+    [OutputType([string])]
     [CmdletBinding()]
     param(
         [AllowNull()][semver]$CurrentVersion
@@ -31,6 +32,7 @@ function Resolve-SemanticReleasePreviewLabel {
 }
 
 function Get-SemanticReleaseNextPreReleaseLabel {
+    [OutputType([string])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$PreReleaseLabel
@@ -48,6 +50,7 @@ function Get-SemanticReleaseNextPreReleaseLabel {
 }
 
 function Get-SemanticReleaseInitialPreReleaseNumber {
+    [OutputType([string])]
     [CmdletBinding()]
     param()
 

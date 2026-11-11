@@ -1,4 +1,5 @@
 function Read-SemanticReleaseCommitMessage {
+    [OutputType([object[]])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][string]$ProjectRoot
@@ -30,6 +31,7 @@ function Get-SemanticReleaseCommitLogResult {
 }
 
 function ConvertFrom-SemanticReleaseCommitLogResult {
+    [OutputType([object[]])]
     [CmdletBinding()]
     param(
         [Parameter(Mandatory)][pscustomobject]$Result
