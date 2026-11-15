@@ -27,4 +27,3 @@ This file summarizes public cmdlet, CLI, configuration, and migration changes fo
 - Added command help and mirrored automated tests for the initial module surface.
 - Added GitHub Actions release automation for stable publishes from `main` and prerelease publishes from `develop`.
 - Added the remaining NovaModuleTools-aligned GitHub validation workflows for tests, dependency review, and PSScriptAnalyzer.
-
