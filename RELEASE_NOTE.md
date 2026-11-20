@@ -10,7 +10,7 @@ This file summarizes public cmdlet, CLI, configuration, and migration changes fo
 ### Changed
 
 - Breaking: `Set-SemanticReleaseJsonVersion`, `Set-SemanticReleasePropertiesVersion`, and `Get-SemanticReleaseNextVersion` now use one `-Preview` switch; stable is the default.
-    - Migration: remove `-ReleaseType Stable`, `-ReleaseType Default`, and `-StableRelease`; replace `-ReleaseType Preview` with `-Preview`. `-PreviewRelease` still works as an alias on `Get-SemanticReleaseNextVersion`.
+    - Migration: remove `-ReleaseType Stable`, `-ReleaseType Default`, and `-StableRelease`; replace `-ReleaseType Preview` and `-PreviewRelease` with `-Preview`.
     - Version plans no longer include `StableRelease`.
 
 - `Update-SemanticReleaseVersion` keeps the version unchanged, warns, and returns `Applied = False` when there are no commits since the latest version tag. `-WhatIf` returns the same result shape as a real run.

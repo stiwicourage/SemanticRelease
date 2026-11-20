@@ -22,8 +22,8 @@ Describe 'Get-SemanticReleaseNextVersion integration' {
         $plan.NewVersion.ToString() | Should -Be '0.2.0'
     }
 
-    It 'keeps the PreviewRelease alias used by existing release pipelines' {
-        $plan = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'1.2.3') -Label Patch -PreviewRelease
+    It 'starts the next patch preview track from a stable release' {
+        $plan = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'1.2.3') -Label Patch -Preview
 
         $plan.NewVersion.ToString() | Should -Be '1.2.4-preview'
     }

@@ -12,7 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Breaking: all version commands now select the release mode with one `-Preview` switch, matching NovaModuleTools. Stable is the default.
     - `Set-SemanticReleaseJsonVersion` and `Set-SemanticReleasePropertiesVersion` replace `-ReleaseType Default|Preview|Stable` with `-Preview`.
-    - `Get-SemanticReleaseNextVersion` replaces `-PreviewRelease` and `-StableRelease` with `-Preview`. `-PreviewRelease` still works as an alias.
+    - `Get-SemanticReleaseNextVersion` replaces `-PreviewRelease` and `-StableRelease` with `-Preview`.
     - Version plans no longer include the `StableRelease` property.
 
 - `Update-SemanticReleaseVersion` leaves the version file unchanged when the repository has no commits since the latest version tag, or no commits at all.

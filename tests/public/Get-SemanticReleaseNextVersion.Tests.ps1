@@ -21,14 +21,10 @@ Describe 'Get-SemanticReleaseNextVersion' {
         Should -Invoke Get-SemanticReleaseVersionPlan -ParameterFilter { -not $PreviewRelease } -Times 1 -Exactly
     }
 
-    It 'requests a preview plan with <Parameter>' -ForEach @(
-        @{ Parameter = 'Preview' }
-        @{ Parameter = 'PreviewRelease' }
-    ) {
+    It 'requests a preview plan with -Preview' {
         Mock Get-SemanticReleaseVersionPlan { return [pscustomobject]@{ NewVersion = [semver]'1.2.4-preview' } }
-        $previewParameter = @{ $Parameter = $true }
 
-        $null = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'1.2.3') @previewParameter
+        $null = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'1.2.3') -Preview
 
         Should -Invoke Get-SemanticReleaseVersionPlan -ParameterFilter { $PreviewRelease } -Times 1 -Exactly
     }
@@ -38,5 +34,6 @@ Describe 'Get-SemanticReleaseNextVersion' {
 
         $parameters.Keys | Should -Not -Contain 'StableRelease'
         $parameters['Preview'].SwitchParameter | Should -BeTrue
+        $parameters['Preview'].Aliases | Should -BeNullOrEmpty
     }
 }

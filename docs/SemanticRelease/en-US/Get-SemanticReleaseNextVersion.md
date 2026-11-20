@@ -130,14 +130,13 @@ HelpMessage: ''
 
 ### -Preview
 
-Indicates that the next version should be a preview release. Without this switch, the plan is a stable release. The `PreviewRelease` alias is kept for existing pipelines.
+Indicates that the next version should be a preview release. Without this switch, the plan is a stable release.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
 DefaultValue: ''
 SupportsWildcards: false
-Aliases:
-- PreviewRelease
+Aliases: []
 ParameterSets:
 - Name: (All)
   Position: Named
