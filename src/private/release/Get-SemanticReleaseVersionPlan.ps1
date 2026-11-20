@@ -4,13 +4,12 @@ function Get-SemanticReleaseVersionPlan {
         [Parameter(Mandatory)][semver]$CurrentVersion,
         [ValidateSet('Major', 'Minor', 'Patch')]
         [string]$Label = 'Patch',
-        [switch]$PreviewRelease,
-        [switch]$StableRelease
+        [switch]$PreviewRelease
     )
 
     $effectiveLabel = Resolve-SemanticReleaseEffectiveLabel -CurrentVersion $CurrentVersion -Label $Label -PreviewRelease:$PreviewRelease
     $versionPart = Get-SemanticReleaseVersionPartForPlan -CurrentVersion $CurrentVersion -Label $effectiveLabel -PreviewRelease:$PreviewRelease
-    $releaseType = Resolve-SemanticReleasePreReleaseLabel -CurrentVersion $CurrentVersion -PreviewRelease:$PreviewRelease -StableRelease:$StableRelease
+    $releaseType = Resolve-SemanticReleasePreReleaseLabel -CurrentVersion $CurrentVersion -PreviewRelease:$PreviewRelease
     $newVersion = [semver]::new($versionPart.Major, $versionPart.Minor, $versionPart.Patch, $releaseType, $null)
 
     return [pscustomobject]@{
@@ -18,7 +17,6 @@ function Get-SemanticReleaseVersionPlan {
         Label = $Label
         EffectiveLabel = $effectiveLabel
         PreviewRelease = [bool]$PreviewRelease
-        StableRelease = [bool]$StableRelease
         NewVersion = $newVersion
     }
 }

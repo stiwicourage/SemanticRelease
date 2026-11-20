@@ -31,7 +31,7 @@ This cmdlet has no aliases.
 
 Use this cmdlet to read commit messages from the target Git repository using the semantic-release log format `%s%n%b%n--END-COMMIT--`.
 
-If a version tag exists, the cmdlet reads commits from `tag..HEAD`.
+If a version tag exists, the cmdlet reads commits from `tag..HEAD`. Only tags that look like semantic versions, such as `1.2.3` or `v1.2.3`, count as version tags.
 If no tag exists, it reads the full commit history visible from `HEAD`.
 
 ## EXAMPLES

@@ -5,13 +5,11 @@ function Set-SemanticReleasePropertiesVersion {
         [string]$Key = 'version',
         [ValidateSet('Major', 'Minor', 'Patch')]
         [string]$Label = 'Patch',
-        [ValidateSet('Default', 'Preview', 'Stable')]
-        [string]$ReleaseType = 'Default'
+        [switch]$Preview
     )
 
     $propertiesData = Read-SemanticReleasePropertiesData -PropertiesPath $Path -Key $Key
-    $releaseOptions = Resolve-SemanticReleaseReleaseOption -ReleaseType $ReleaseType
-    $versionPlan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]$propertiesData.PreviousVersion) -Label $Label @releaseOptions
+    $versionPlan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]$propertiesData.PreviousVersion) -Label $Label -PreviewRelease:$Preview
     $newVersion = $versionPlan.NewVersion.ToString()
     $changeInfo = @{
         Path = $Path

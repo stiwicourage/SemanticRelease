@@ -90,7 +90,7 @@ Returns a range-basis object with `ProjectRoot`, `IsRepository`, `HasVersionTag`
 
 ## NOTES
 
-- The cmdlet uses `git describe --tags --abbrev=0` to locate the most recent version tag.
+- The cmdlet uses `git describe --tags --abbrev=0` with `--match` filters to locate the most recent version tag. Only tags that look like semantic versions, such as `1.2.3` or `v1.2.3`, are considered; other tags such as `deploy-marker` are ignored.
 - If Git is unavailable or the path is not a repository, `IsRepository` is `$false`.
 
 ## RELATED LINKS

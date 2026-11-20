@@ -2,10 +2,15 @@ function Read-SemanticReleaseCommitMessage {
     [OutputType([object[]])]
     [CmdletBinding()]
     param(
-        [Parameter(Mandatory)][string]$ProjectRoot
+        [Parameter(Mandatory)][string]$ProjectRoot,
+        [pscustomobject]$CommitRangeBasis
     )
 
-    $commitRangeBasis = Get-SemanticReleaseCommitRangeBasis -ProjectRoot $ProjectRoot
+    $commitRangeBasis = $CommitRangeBasis
+    if ($null -eq $commitRangeBasis) {
+        $commitRangeBasis = Get-SemanticReleaseCommitRangeBasis -ProjectRoot $ProjectRoot
+    }
+
     if (-not $commitRangeBasis.IsRepository) {
         return @()
     }

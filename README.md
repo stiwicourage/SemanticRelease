@@ -6,7 +6,7 @@ A PowerShell-native semantic release toolkit for automated versioning and releas
 
 The initial module surface provides the reusable semantic-release core for Git-based PowerShell workflows:
 
-- `Get-SemanticReleaseCommitRange` detects the last version tag and returns the commit-range basis.
+- `Get-SemanticReleaseCommitRange` detects the last version tag (such as `1.2.3` or `v1.2.3`; other tags are ignored) and returns the commit-range basis.
 - `Get-SemanticReleaseCommitMessage` collects commit messages since the last tag, or from the full history when no tag exists.
 - `Get-SemanticReleaseLabel` infers the semantic-release label (`Major`, `Minor`, or `Patch`) from commit messages.
 - `Get-SemanticReleaseNextVersion` calculates the next semantic version, including preview and stable-release transitions. On `0.y.z`, stable breaking-change bumps are planned as the next minor version with a warning; set `1.0.0` manually once the software is stable, and an exact stable `1.0.0` is then kept as the first stable release target.
@@ -20,7 +20,7 @@ Example workflow:
 ```powershell
 $messages = Get-SemanticReleaseCommitMessage
 $label = Get-SemanticReleaseLabel -Message $messages
-$plan = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'0.1.0-preview') -Label $label -StableRelease
+$plan = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'0.1.0-preview') -Label $label
 $result = Set-SemanticReleaseJsonVersion -Path ./project.json -Label $label -Confirm:$false
 $gradle = Set-SemanticReleasePropertiesVersion -Path ./gradle.properties -Key version -Label $label -Confirm:$false
 $auto = Update-SemanticReleaseVersion -Path ./gradle.properties -ProjectRoot . -Preview -Confirm:$false
@@ -37,11 +37,11 @@ SemanticRelease only decides and writes the version. Git commits, tags, pushes, 
 $current = (Get-SemanticReleasePropertiesVersion -Path ./gradle.properties).Version
 $messages = @(Get-SemanticReleaseCommitMessage -ProjectRoot .)
 $label = Get-SemanticReleaseLabel -Message $messages
-$release = Set-SemanticReleasePropertiesVersion -Path ./gradle.properties -Label $label -ReleaseType Stable -Confirm:$false
+$release = Set-SemanticReleasePropertiesVersion -Path ./gradle.properties -Label $label -Confirm:$false
 $release.NewVersion
 ```
 
-Then build, commit, tag, and push with your pipeline's own git steps, and prepare the next preview version with `Get-SemanticReleaseNextVersion -Label Patch -PreviewRelease`.
+Then build, commit, tag, and push with your pipeline's own git steps, and prepare the next preview version with `Get-SemanticReleaseNextVersion -Label Patch -Preview`.
 
 ## GitHub release automation
 

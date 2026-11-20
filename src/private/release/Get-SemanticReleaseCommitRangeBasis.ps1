@@ -14,7 +14,11 @@ function Get-SemanticReleaseCommitRangeBasis {
         return Get-SemanticReleaseCommitRangeBasisResult -ProjectRoot $ProjectRoot -IsRepository:$false
     }
 
-    $lastTagResult = Invoke-SemanticReleaseGitCommand -ProjectRoot $ProjectRoot -Arguments @('describe', '--tags', '--abbrev=0')
+    $lastTagResult = Invoke-SemanticReleaseGitCommand -ProjectRoot $ProjectRoot -Arguments @(
+        'describe', '--tags', '--abbrev=0',
+        '--match', 'v[0-9]*.[0-9]*.[0-9]*',
+        '--match', '[0-9]*.[0-9]*.[0-9]*'
+    )
     $lastTag = Get-SemanticReleaseGitCommandOutputText -Result $lastTagResult
     if ($lastTagResult.ExitCode -eq 0 -and -not [string]::IsNullOrWhiteSpace($lastTag)) {
         return Get-SemanticReleaseCommitRangeBasisResult -ProjectRoot $ProjectRoot -IsRepository -LastTag $lastTag

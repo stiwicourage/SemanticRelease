@@ -21,7 +21,7 @@ Updates a semantic version key in a JSON file using semantic-release version rul
 
 ```
 Set-SemanticReleaseJsonVersion [-Path] <string> [[-Key] <string>] [[-Label] <string>]
- [[-ReleaseType] <string>] [-WhatIf] [-Confirm]
+ [-Preview] [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -40,11 +40,11 @@ On `0.y.z`, a stable `Major` bump is planned as the next minor version with a wa
 
 ### Example 1
 
-Preview a patch update for the default `Version` key.
+Preview the next preview version for the default `Version` key without writing the file.
 
 ```powershell
-PS> Set-SemanticReleaseJsonVersion -Path ./project.json -ReleaseType Preview -WhatIf
-What if: Performing the operation "Set Version to 0.1.1" on target "project.json".
+PS> Set-SemanticReleaseJsonVersion -Path ./project.json -Preview -WhatIf
+What if: Performing the operation "Set Version to 0.1.1-preview" on target "project.json".
 ```
 
 ### Example 2
@@ -149,18 +149,18 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -ReleaseType
+### -Preview
 
-Specifies how the cmdlet should emit the next version. Valid values are `Default`, `Preview`, and `Stable`.
+Indicates that the next version should be a preview release. Without this switch, the cmdlet writes a stable version.
 
 ```yaml
-Type: System.String
-DefaultValue: Default
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 3
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false

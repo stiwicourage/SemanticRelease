@@ -23,16 +23,28 @@ Describe 'Set-SemanticReleaseJsonVersion' {
         Should -Invoke Write-SemanticReleaseJsonData -Times 1
     }
 
-    It 'maps Preview release type to the preview plan option' {
+    It 'requests a stable plan by default' {
+        Mock Read-SemanticReleaseJsonData { return @{ Version = '1.2.3' } }
+        Mock Get-SemanticReleaseVersionPlan {
+            return [pscustomobject]@{ NewVersion = [semver]'1.2.4' }
+        }
+        Mock Write-SemanticReleaseJsonData {}
+
+        Set-SemanticReleaseJsonVersion -Path '/tmp/project.json' -Confirm:$false | Out-Null
+
+        Should -Invoke Get-SemanticReleaseVersionPlan -ParameterFilter { -not $PreviewRelease } -Times 1 -Exactly
+    }
+
+    It 'maps the Preview switch to the preview plan option' {
         Mock Read-SemanticReleaseJsonData { return @{ Version = '1.2.3' } }
         Mock Get-SemanticReleaseVersionPlan {
             return [pscustomobject]@{ NewVersion = [semver]'1.2.4-preview' }
         }
         Mock Write-SemanticReleaseJsonData {}
 
-        Set-SemanticReleaseJsonVersion -Path '/tmp/project.json' -ReleaseType Preview -Confirm:$false | Out-Null
+        Set-SemanticReleaseJsonVersion -Path '/tmp/project.json' -Preview -Confirm:$false | Out-Null
 
-        Should -Invoke Get-SemanticReleaseVersionPlan -ParameterFilter { $PreviewRelease -and -not $StableRelease }
+        Should -Invoke Get-SemanticReleaseVersionPlan -ParameterFilter { $PreviewRelease } -Times 1 -Exactly
     }
 
     It 'returns Applied false under WhatIf' {

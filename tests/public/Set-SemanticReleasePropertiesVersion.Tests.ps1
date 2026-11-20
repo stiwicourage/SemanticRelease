@@ -5,7 +5,6 @@ BeforeAll {
     . (Join-Path $projectRoot 'src/private/shared/Write-SemanticReleasePropertiesData.ps1')
     . (Join-Path $projectRoot 'src/private/release/Get-SemanticReleaseVersionPlan.ps1')
     . (Join-Path $projectRoot 'src/private/release/Get-SemanticReleasePropertiesVersionWriteResult.ps1')
-    . (Join-Path $projectRoot 'src/private/release/Resolve-SemanticReleaseReleaseOption.ps1')
 }
 
 Describe 'Set-SemanticReleasePropertiesVersion' {
@@ -30,7 +29,25 @@ Describe 'Set-SemanticReleasePropertiesVersion' {
         Should -Invoke Write-SemanticReleasePropertiesData -Times 1
     }
 
-    It 'maps Stable release type to the stable plan option' {
+    It 'maps the Preview switch to the preview plan option' {
+        Mock Read-SemanticReleasePropertiesData {
+            return @{
+                Path = '/tmp/gradle.properties'
+                Key = 'version'
+                PreviousVersion = '1.2.3'
+            }
+        }
+        Mock Get-SemanticReleaseVersionPlan {
+            return [pscustomobject]@{ NewVersion = [semver]'1.2.4-preview' }
+        }
+        Mock Write-SemanticReleasePropertiesData {}
+
+        Set-SemanticReleasePropertiesVersion -Path '/tmp/gradle.properties' -Preview -Confirm:$false | Out-Null
+
+        Should -Invoke Get-SemanticReleaseVersionPlan -ParameterFilter { $PreviewRelease } -Times 1 -Exactly
+    }
+
+    It 'requests a stable plan by default' {
         Mock Read-SemanticReleasePropertiesData {
             return @{
                 Path = '/tmp/gradle.properties'
@@ -43,9 +60,9 @@ Describe 'Set-SemanticReleasePropertiesVersion' {
         }
         Mock Write-SemanticReleasePropertiesData {}
 
-        Set-SemanticReleasePropertiesVersion -Path '/tmp/gradle.properties' -ReleaseType Stable -Confirm:$false | Out-Null
+        Set-SemanticReleasePropertiesVersion -Path '/tmp/gradle.properties' -Confirm:$false | Out-Null
 
-        Should -Invoke Get-SemanticReleaseVersionPlan -ParameterFilter { $StableRelease -and -not $PreviewRelease }
+        Should -Invoke Get-SemanticReleaseVersionPlan -ParameterFilter { -not $PreviewRelease } -Times 1 -Exactly
     }
 
     It 'returns Applied false under WhatIf' {

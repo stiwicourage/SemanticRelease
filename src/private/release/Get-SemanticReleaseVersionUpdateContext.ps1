@@ -8,12 +8,10 @@ function Get-SemanticReleaseVersionUpdateContext {
     )
 
     $fileContext = Get-SemanticReleaseVersionFileContext -Path $Path -Key $Key
-    $commitMessages = @(Read-SemanticReleaseCommitMessage -ProjectRoot $ProjectRoot)
-    $label = Resolve-SemanticReleaseVersionLabel -Message $commitMessages
-    $releaseOptions = Get-SemanticReleaseVersionUpdateReleaseOption -PreviewRelease:$PreviewRelease
-    $versionPlan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]$fileContext.PreviousVersion) -Label $label -PreviewRelease:$releaseOptions.PreviewRelease -StableRelease:$releaseOptions.StableRelease
-    $changeInfo = Get-SemanticReleaseVersionUpdateChangeInfo -FileContext $fileContext -NewVersion $versionPlan.NewVersion.ToString()
-    $whatIfResult = Get-SemanticReleaseVersionUpdateWriteResult -Format $fileContext.Format -ChangeInfo $changeInfo
+    $commitRangeBasis = Get-SemanticReleaseCommitRangeBasis -ProjectRoot $ProjectRoot
+    $commitMessages = @(Read-SemanticReleaseCommitMessage -ProjectRoot $ProjectRoot -CommitRangeBasis $commitRangeBasis)
+    $hasCommits = $commitMessages.Count -gt 0 -or -not $commitRangeBasis.IsRepository
+    $versionChange = Get-SemanticReleaseVersionUpdateChange -PreviousVersion $fileContext.PreviousVersion -CommitMessages $commitMessages -HasCommits:$hasCommits -PreviewRelease:$PreviewRelease
 
     return [pscustomobject]@{
         Format = $fileContext.Format
@@ -21,15 +19,38 @@ function Get-SemanticReleaseVersionUpdateContext {
         Target = [System.IO.Path]::GetFileName($fileContext.Path)
         Key = $fileContext.Key
         PreviousVersion = $fileContext.PreviousVersion
-        NewVersion = $versionPlan.NewVersion.ToString()
-        Label = $label
-        EffectiveLabel = $versionPlan.EffectiveLabel
-        ReleaseType = $releaseOptions.ReleaseType
+        NewVersion = $versionChange.NewVersion
+        Label = $versionChange.Label
+        EffectiveLabel = $versionChange.EffectiveLabel
         PreviewRelease = [bool]$PreviewRelease
         CommitMessages = $commitMessages
         CommitCount = $commitMessages.Count
-        Action = "Update $($fileContext.Key) to $($versionPlan.NewVersion)"
-        WhatIfResult = $whatIfResult
+        HasCommits = $hasCommits
+        LastTag = $commitRangeBasis.LastTag
+        Action = "Update $($fileContext.Key) to $($versionChange.NewVersion)"
+    }
+}
+
+function Get-SemanticReleaseVersionUpdateChange {
+    [OutputType([hashtable])]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][string]$PreviousVersion,
+        [AllowEmptyCollection()][string[]]$CommitMessages = @(),
+        [switch]$HasCommits,
+        [switch]$PreviewRelease
+    )
+
+    if (-not $HasCommits) {
+        return @{ NewVersion = $PreviousVersion; Label = $null; EffectiveLabel = $null }
+    }
+
+    $label = Resolve-SemanticReleaseVersionLabel -Message $CommitMessages
+    $versionPlan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]$PreviousVersion) -Label $label -PreviewRelease:$PreviewRelease
+    return @{
+        NewVersion = $versionPlan.NewVersion.ToString()
+        Label = $label
+        EffectiveLabel = $versionPlan.EffectiveLabel
     }
 }
 
@@ -86,53 +107,4 @@ function Get-SemanticReleaseVersionTargetKey {
     }
 
     return $Key
-}
-
-function Get-SemanticReleaseVersionUpdateReleaseOption {
-    [OutputType([hashtable])]
-    [CmdletBinding()]
-    param(
-        [switch]$PreviewRelease
-    )
-
-    $releaseType = 'Default'
-    if ($PreviewRelease) {
-        $releaseType = 'Preview'
-    }
-
-    return @{
-        PreviewRelease = [bool]$PreviewRelease
-        StableRelease = $false
-        ReleaseType = $releaseType
-    }
-}
-
-function Get-SemanticReleaseVersionUpdateChangeInfo {
-    [OutputType([hashtable])]
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory)][hashtable]$FileContext,
-        [Parameter(Mandatory)][string]$NewVersion
-    )
-
-    return @{
-        Path = $FileContext.Path
-        Key = $FileContext.Key
-        PreviousVersion = $FileContext.PreviousVersion
-        NewVersion = $NewVersion
-    }
-}
-
-function Get-SemanticReleaseVersionUpdateWriteResult {
-    [CmdletBinding()]
-    param(
-        [Parameter(Mandatory)][string]$Format,
-        [Parameter(Mandatory)][hashtable]$ChangeInfo
-    )
-
-    if ($Format -eq 'Json') {
-        return Get-SemanticReleaseJsonVersionWriteResult -ChangeInfo $ChangeInfo
-    }
-
-    return Get-SemanticReleasePropertiesVersionWriteResult -ChangeInfo $ChangeInfo
 }

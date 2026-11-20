@@ -29,6 +29,8 @@ Describe 'Get-SemanticReleaseVersionPlan' {
 
         $plan.CurrentVersion.ToString() | Should -Be '1.2.3'
         $plan.NewVersion.ToString() | Should -Be '1.2.4'
+        $plan.PreviewRelease | Should -BeFalse
+        $plan.PSObject.Properties.Name | Should -Not -Contain 'StableRelease'
     }
 
     It 'returns a preview release plan with preview label for a stable version' {
@@ -44,7 +46,7 @@ Describe 'Get-SemanticReleaseVersionPlan' {
     }
 
     It 'finalizes an existing prerelease when the target label matches' {
-        $plan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]'1.0.0-preview01') -Label Major -StableRelease
+        $plan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]'1.0.0-preview01') -Label Major
 
         $plan.NewVersion.ToString() | Should -Be '1.0.0'
     }
@@ -92,7 +94,7 @@ Describe 'Get-SemanticReleaseVersionPlan for major version zero' {
         @{ CurrentVersion = '0.1.1-preview'; Expected = '0.2.0' }
         @{ CurrentVersion = '0.2.0-preview01'; Expected = '0.2.0' }
     ) {
-        $plan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]$CurrentVersion) -Label Major -StableRelease -WarningAction SilentlyContinue
+        $plan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]$CurrentVersion) -Label Major -WarningAction SilentlyContinue
 
         $plan.NewVersion.ToString() | Should -Be $Expected
         $plan.Label | Should -Be 'Major'

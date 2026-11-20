@@ -66,4 +66,32 @@ Describe 'Get-SemanticReleaseCommitRangeBasis' {
         $result.LastTag | Should -BeNullOrEmpty
         $result.RevisionRange | Should -BeNullOrEmpty
     }
+
+    It 'only considers semantic version tags with or without a v prefix' {
+        function Test-SemanticReleaseGitAvailable { return $true }
+        function Invoke-SemanticReleaseGitCommand {
+            param($ProjectRoot, $Arguments)
+            $null = $ProjectRoot
+
+            if ($Arguments[0] -eq 'rev-parse') {
+                return [pscustomobject]@{ ExitCode = 0; Output = @('true') }
+            }
+
+            $script:describeArguments = $Arguments
+            return [pscustomobject]@{ ExitCode = 0; Output = @('1.2.3') }
+        }
+        function Get-SemanticReleaseGitCommandOutputText {
+            param($Result)
+
+            return ($Result.Output -join [Environment]::NewLine).Trim()
+        }
+
+        $null = Get-SemanticReleaseCommitRangeBasis -ProjectRoot '/repo'
+
+        $script:describeArguments | Should -Be @(
+            'describe', '--tags', '--abbrev=0',
+            '--match', 'v[0-9]*.[0-9]*.[0-9]*',
+            '--match', '[0-9]*.[0-9]*.[0-9]*'
+        )
+    }
 }

@@ -1,8 +1,7 @@
 BeforeAll {
     $projectRoot = Split-Path -Parent (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
     . (Join-Path $projectRoot 'src/private/release/Get-SemanticReleaseVersionUpdateContext.ps1')
-    . (Join-Path $projectRoot 'src/private/release/Get-SemanticReleaseJsonVersionWriteResult.ps1')
-    . (Join-Path $projectRoot 'src/private/release/Get-SemanticReleasePropertiesVersionWriteResult.ps1')
+    . (Join-Path $projectRoot 'src/private/release/Get-SemanticReleaseCommitRangeBasis.ps1')
     . (Join-Path $projectRoot 'src/private/shared/Read-SemanticReleaseJsonData.ps1')
     . (Join-Path $projectRoot 'src/private/shared/Read-SemanticReleasePropertiesData.ps1')
     . (Join-Path $projectRoot 'src/private/release/Read-SemanticReleaseCommitMessage.ps1')
@@ -11,6 +10,12 @@ BeforeAll {
 }
 
 Describe 'Get-SemanticReleaseVersionUpdateContext' {
+    BeforeEach {
+        Mock Get-SemanticReleaseCommitRangeBasis {
+            return [pscustomobject]@{ IsRepository = $true; HasVersionTag = $true; LastTag = 'v1.2.3'; RevisionRange = 'v1.2.3..HEAD' }
+        }
+    }
+
     It 'builds a preview properties context with the default key and inferred label' {
         Mock Read-SemanticReleasePropertiesData {
             return @{
@@ -32,7 +37,8 @@ Describe 'Get-SemanticReleaseVersionUpdateContext' {
         $context.PreviousVersion | Should -Be '1.2.3-preview01'
         $context.NewVersion | Should -Be '1.2.3-preview02'
         $context.CommitCount | Should -Be 1
-        $context.WhatIfResult.Applied | Should -BeFalse
+        $context.HasCommits | Should -BeTrue
+        $context.LastTag | Should -Be 'v1.2.3'
         Should -Invoke Get-SemanticReleaseVersionPlan -ParameterFilter { $PreviewRelease -and $Label -eq 'Minor' } -Times 1 -Exactly
     }
 
@@ -50,6 +56,44 @@ Describe 'Get-SemanticReleaseVersionUpdateContext' {
         $context.NewVersion | Should -Be '1.2.4'
     }
 
+    It 'keeps the current version without planning when a repository has no new commits' {
+        Mock Read-SemanticReleaseJsonData { return @{ Version = '1.2.3' } }
+        Mock Read-SemanticReleaseCommitMessage { return @() }
+        Mock Get-SemanticReleaseVersionPlan {}
+
+        $context = Get-SemanticReleaseVersionUpdateContext -Path '/repo/project.json' -ProjectRoot '/repo'
+
+        $context.HasCommits | Should -BeFalse
+        $context.NewVersion | Should -Be '1.2.3'
+        $context.CommitCount | Should -Be 0
+        $context.Label | Should -BeNullOrEmpty
+        Should -Invoke Get-SemanticReleaseVersionPlan -Times 0
+    }
+
+    It 'reads commits from the same range basis it reports' {
+        Mock Read-SemanticReleaseJsonData { return @{ Version = '1.2.3' } }
+        Mock Read-SemanticReleaseCommitMessage { return @('fix: a bug') }
+        Mock Get-SemanticReleaseVersionPlan { return [pscustomobject]@{ NewVersion = [semver]'1.2.4'; EffectiveLabel = 'Patch' } }
+
+        $null = Get-SemanticReleaseVersionUpdateContext -Path '/repo/project.json' -ProjectRoot '/repo'
+
+        Should -Invoke Get-SemanticReleaseCommitRangeBasis -Times 1 -Exactly
+        Should -Invoke Read-SemanticReleaseCommitMessage -ParameterFilter { $CommitRangeBasis.LastTag -eq 'v1.2.3' } -Times 1 -Exactly
+    }
+
+    It 'falls back to a patch plan outside a git repository' {
+        Mock Get-SemanticReleaseCommitRangeBasis { return [pscustomobject]@{ IsRepository = $false; HasVersionTag = $false } }
+        Mock Read-SemanticReleaseJsonData { return @{ Version = '1.2.3' } }
+        Mock Read-SemanticReleaseCommitMessage { return @() }
+        Mock Get-SemanticReleaseVersionPlan { return [pscustomobject]@{ NewVersion = [semver]'1.2.4'; EffectiveLabel = 'Patch' } }
+
+        $context = Get-SemanticReleaseVersionUpdateContext -Path '/repo/project.json' -ProjectRoot '/repo'
+
+        $context.HasCommits | Should -BeTrue
+        $context.NewVersion | Should -Be '1.2.4'
+        Should -Invoke Get-SemanticReleaseVersionPlan -ParameterFilter { $Label -eq 'Patch' } -Times 1 -Exactly
+    }
+
     It 'throws for unsupported version file extensions' {
         {
             Get-SemanticReleaseVersionUpdateContext -Path '/repo/version.txt' -ProjectRoot '/repo'
@@ -60,67 +104,5 @@ Describe 'Get-SemanticReleaseVersionUpdateContext' {
 Describe 'Get-SemanticReleaseVersionTargetKey' {
     It 'returns the supplied key when one is provided' {
         Get-SemanticReleaseVersionTargetKey -Key 'pluginVersion' -DefaultKey 'Version' | Should -Be 'pluginVersion'
-    }
-}
-
-Describe 'Get-SemanticReleaseVersionUpdateReleaseOption' {
-    It 'returns Preview when preview mode is requested' {
-        $options = Get-SemanticReleaseVersionUpdateReleaseOption -PreviewRelease
-
-        $options.PreviewRelease | Should -BeTrue
-        $options.StableRelease | Should -BeFalse
-        $options.ReleaseType | Should -Be 'Preview'
-    }
-
-    It 'returns Default when preview mode is not requested' {
-        $options = Get-SemanticReleaseVersionUpdateReleaseOption
-
-        $options.PreviewRelease | Should -BeFalse
-        $options.ReleaseType | Should -Be 'Default'
-    }
-}
-
-Describe 'Get-SemanticReleaseVersionUpdateChangeInfo' {
-    It 'returns the shared change info payload' {
-        $changeInfo = Get-SemanticReleaseVersionUpdateChangeInfo -FileContext @{
-            Path = '/repo/project.json'
-            Key = 'Version'
-            PreviousVersion = '1.2.3'
-        } -NewVersion '1.2.4'
-
-        $changeInfo.Path | Should -Be '/repo/project.json'
-        $changeInfo.Key | Should -Be 'Version'
-        $changeInfo.PreviousVersion | Should -Be '1.2.3'
-        $changeInfo.NewVersion | Should -Be '1.2.4'
-    }
-}
-
-Describe 'Get-SemanticReleaseVersionUpdateWriteResult' {
-    It 'uses the expected write result shape for <Format> files' -ForEach @(
-        @{
-            Format = 'Json'
-            Target = 'project.json'
-            ChangeInfo = @{
-                Path = '/repo/project.json'
-                Key = 'Version'
-                PreviousVersion = '1.2.3'
-                NewVersion = '1.2.4'
-            }
-        }
-        @{
-            Format = 'Properties'
-            Target = 'gradle.properties'
-            ChangeInfo = @{
-                Path = '/repo/gradle.properties'
-                Key = 'version'
-                PreviousVersion = '1.2.3-preview01'
-                NewVersion = '1.2.3-preview02'
-            }
-        }
-    ) {
-        $result = Get-SemanticReleaseVersionUpdateWriteResult -Format $Format -ChangeInfo $ChangeInfo
-
-        $result.Target | Should -Be $Target
-        $result.Applied | Should -BeFalse
     }
 }

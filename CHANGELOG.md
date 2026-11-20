@@ -10,6 +10,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Breaking: all version commands now select the release mode with one `-Preview` switch, matching NovaModuleTools. Stable is the default.
+    - `Set-SemanticReleaseJsonVersion` and `Set-SemanticReleasePropertiesVersion` replace `-ReleaseType Default|Preview|Stable` with `-Preview`.
+    - `Get-SemanticReleaseNextVersion` replaces `-PreviewRelease` and `-StableRelease` with `-Preview`. `-PreviewRelease` still works as an alias.
+    - Version plans no longer include the `StableRelease` property.
+
+- `Update-SemanticReleaseVersion` leaves the version file unchanged when the repository has no commits since the latest version tag, or no commits at all.
+    - It writes one warning and returns `Applied = False` with `NewVersion` equal to `PreviousVersion`, so re-running a release workflow does not bump the version.
+    - Outside a Git repository, it still falls back to a `Patch` bump.
+
+- `Update-SemanticReleaseVersion -WhatIf` now returns the same result shape as a real run, including `Label`, `EffectiveLabel`, `PreviewRelease`, `CommitMessages`, and `CommitCount`, with `Applied = False`.
+
 - `Get-SemanticReleaseNextVersion` and `Update-SemanticReleaseVersion` now preserve an exact stable `1.0.0` as the first stable release target instead of auto-advancing it from inferred fix, feature, or breaking-change history.
     - The detected semantic label is still reported, but the next stable release stays `1.0.0`.
     - Preview bumps from exact stable `1.0.0` still enter the next patch preview track as `1.0.1-preview`.
@@ -23,6 +34,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Removed
 
 ### Fixed
+
+- Breaking-change detection now follows the Conventional Commits specification: `BREAKING CHANGE:` and `BREAKING-CHANGE:` footers must be uppercase and start a line. Prose such as `docs: explain why this is not a breaking change` no longer triggers a major bump.
+- Commit-range detection only uses tags that look like semantic versions, such as `1.2.3` or `v1.2.3`. Other tags, such as `deploy-marker`, no longer hide earlier commits from the release-label calculation.
 
 ### Security
 
