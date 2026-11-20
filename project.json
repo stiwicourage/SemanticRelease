@@ -1,7 +1,7 @@
 {
   "ProjectName": "SemanticRelease",
   "Description": "A PowerShell-native semantic release toolkit for automated versioning and release workflows based on Git history and Conventional Commits.",
-  "Version": "0.1.0",
+  "Version": "0.1.1-preview",
   "Preamble": [
     "Set-StrictMode -Version Latest",
     "$ErrorActionPreference = 'Stop'"
@@ -38,7 +38,7 @@
         "src/private/**/*.ps1",
         "src/classes/*.ps1"
       ],
-      "CoveragePercentTarget": 90,
+      "CoveragePercentTarget": 95,
       "OutputPath": "artifacts/coverage.xml",
       "OutputFormat": "JaCoCo"
     },

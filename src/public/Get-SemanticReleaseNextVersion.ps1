@@ -4,9 +4,8 @@ function Get-SemanticReleaseNextVersion {
         [Parameter(Mandatory)][semver]$CurrentVersion,
         [ValidateSet('Major', 'Minor', 'Patch')]
         [string]$Label = 'Patch',
-        [switch]$PreviewRelease,
-        [switch]$StableRelease
+        [switch]$Preview
     )
 
-    return Get-SemanticReleaseVersionPlan -CurrentVersion $CurrentVersion -Label $Label -PreviewRelease:$PreviewRelease -StableRelease:$StableRelease
+    return Get-SemanticReleaseVersionPlan -CurrentVersion $CurrentVersion -Label $Label -PreviewRelease:$Preview
 }

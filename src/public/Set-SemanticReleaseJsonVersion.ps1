@@ -5,8 +5,7 @@ function Set-SemanticReleaseJsonVersion {
         [string]$Key = 'Version',
         [ValidateSet('Major', 'Minor', 'Patch')]
         [string]$Label = 'Patch',
-        [ValidateSet('Default', 'Preview', 'Stable')]
-        [string]$ReleaseType = 'Default'
+        [switch]$Preview
     )
 
     $jsonData = Read-SemanticReleaseJsonData -JsonPath $Path
@@ -15,9 +14,7 @@ function Set-SemanticReleaseJsonVersion {
     }
 
     $previousVersion = [string]$jsonData[$Key]
-    $isPreviewRelease = $ReleaseType -eq 'Preview'
-    $isStableRelease = $ReleaseType -eq 'Stable'
-    $versionPlan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]$previousVersion) -Label $Label -PreviewRelease:$isPreviewRelease -StableRelease:$isStableRelease
+    $versionPlan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]$previousVersion) -Label $Label -PreviewRelease:$Preview
     $newVersion = $versionPlan.NewVersion.ToString()
     $target = [System.IO.Path]::GetFileName($Path)
     $action = "Set $Key to $newVersion"

@@ -2,16 +2,11 @@ function Resolve-SemanticReleasePreReleaseLabel {
     [CmdletBinding()]
     param(
         [AllowNull()][semver]$CurrentVersion,
-        [switch]$PreviewRelease,
-        [switch]$StableRelease
+        [switch]$PreviewRelease
     )
 
     if ($PreviewRelease) {
         return Resolve-SemanticReleasePreviewLabel -CurrentVersion $CurrentVersion
-    }
-
-    if ($StableRelease) {
-        return $null
     }
 
     return $null

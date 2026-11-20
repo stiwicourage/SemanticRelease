@@ -48,10 +48,6 @@ Describe 'Resolve-SemanticReleasePreReleaseLabel' {
         Resolve-SemanticReleasePreReleaseLabel -CurrentVersion ([semver]'1.0.0') -PreviewRelease | Should -Be 'preview'
     }
 
-    It 'returns null for stable releases' {
-        Resolve-SemanticReleasePreReleaseLabel -CurrentVersion ([semver]'1.0.0') -StableRelease | Should -BeNullOrEmpty
-    }
-
     It 'returns null by default' {
         Resolve-SemanticReleasePreReleaseLabel -CurrentVersion ([semver]'1.0.0') | Should -BeNullOrEmpty
     }

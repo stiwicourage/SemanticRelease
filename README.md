@@ -6,10 +6,10 @@ A PowerShell-native semantic release toolkit for automated versioning and releas
 
 The initial module surface provides the reusable semantic-release core for Git-based PowerShell workflows:
 
-- `Get-SemanticReleaseCommitRange` detects the last version tag and returns the commit-range basis.
+- `Get-SemanticReleaseCommitRange` detects the last version tag (such as `1.2.3` or `v1.2.3`; other tags are ignored) and returns the commit-range basis.
 - `Get-SemanticReleaseCommitMessage` collects commit messages since the last tag, or from the full history when no tag exists.
 - `Get-SemanticReleaseLabel` infers the semantic-release label (`Major`, `Minor`, or `Patch`) from commit messages.
-- `Get-SemanticReleaseNextVersion` calculates the next semantic version, including preview and stable-release transitions.
+- `Get-SemanticReleaseNextVersion` calculates the next semantic version, including preview and stable-release transitions. On `0.y.z`, stable breaking-change bumps are planned as the next minor version with a warning; set `1.0.0` manually once the software is stable, and an exact stable `1.0.0` is then kept as the first stable release target.
 - `Set-SemanticReleaseJsonVersion` updates a top-level JSON version key with `ShouldProcess` support.
 - `Get-SemanticReleasePropertiesVersion` reads a version property from a Java-style `.properties` file without changing it.
 - `Set-SemanticReleasePropertiesVersion` updates a version property in Java-style `.properties` files such as `gradle.properties`.
@@ -20,7 +20,7 @@ Example workflow:
 ```powershell
 $messages = Get-SemanticReleaseCommitMessage
 $label = Get-SemanticReleaseLabel -Message $messages
-$plan = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'0.1.0-preview') -Label $label -StableRelease
+$plan = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'0.1.0-preview') -Label $label
 $result = Set-SemanticReleaseJsonVersion -Path ./project.json -Label $label -Confirm:$false
 $gradle = Set-SemanticReleasePropertiesVersion -Path ./gradle.properties -Key version -Label $label -Confirm:$false
 $auto = Update-SemanticReleaseVersion -Path ./gradle.properties -ProjectRoot . -Preview -Confirm:$false
@@ -37,11 +37,11 @@ SemanticRelease only decides and writes the version. Git commits, tags, pushes, 
 $current = (Get-SemanticReleasePropertiesVersion -Path ./gradle.properties).Version
 $messages = @(Get-SemanticReleaseCommitMessage -ProjectRoot .)
 $label = Get-SemanticReleaseLabel -Message $messages
-$release = Set-SemanticReleasePropertiesVersion -Path ./gradle.properties -Label $label -ReleaseType Stable -Confirm:$false
+$release = Set-SemanticReleasePropertiesVersion -Path ./gradle.properties -Label $label -Confirm:$false
 $release.NewVersion
 ```
 
-Then build, commit, tag, and push with your pipeline's own git steps, and prepare the next preview version with `Get-SemanticReleaseNextVersion -Label Patch -PreviewRelease`.
+Then build, commit, tag, and push with your pipeline's own git steps, and prepare the next preview version with `Get-SemanticReleaseNextVersion -Label Patch -Preview`.
 
 ## GitHub release automation
 
@@ -54,7 +54,7 @@ Then build, commit, tag, and push with your pipeline's own git steps, and prepar
 
 All workflows are thin callers of the reusable workflows in `stiwicourage/powershell-ci`.
 
-- `.github/workflows/Tests.yml` runs build, unit tests, integration tests, changelog validation, and artifacts. CodeScene is disabled in `Tests.yml` (`codescene-enabled: false`) until `CS_URL` and `CS_PROJECT_ID` are configured as repository variables; set it to `true` to enable the CodeScene gates and analysis.
+- `.github/workflows/Tests.yml` runs build, unit tests, integration tests, validation of both release files, and artifacts, with a daily scheduled run at 03:00 UTC. It pins PSScriptAnalyzer to `1.25.0` and uses the shared defaults that enable ScriptAnalyzer and CodeScene; hosted CodeScene analysis requires the repository's CodeScene configuration.
 - `.github/workflows/Security.yml` runs CodeQL, uploads SARIF results from `PSScriptAnalyzer`, and runs GitHub dependency review on pull requests.
 
 ## Agentic Copilot workflow

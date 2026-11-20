@@ -34,6 +34,12 @@ Use this cmdlet to read commit messages from the current Git repository, infer t
 
 `Update-SemanticReleaseVersion` supports top-level JSON version keys such as `project.json` and Java-style `.properties` version keys such as `gradle.properties`. Use `-Preview` to continue or seed preview versions without changing the stable release branch semantics.
 
+When the repository has no commits since the latest version tag, or no commits at all, the cmdlet leaves the file unchanged, writes one warning, and returns a result with `Applied` set to `False` and `NewVersion` equal to `PreviousVersion`. Outside a Git repository, no commits can be read and the cmdlet falls back to a `Patch` bump.
+
+With `-WhatIf`, the cmdlet returns the same result shape as a real run, with `Applied` set to `False`.
+
+On `0.y.z`, a stable `Major` bump is planned as the next minor version with a warning, and an exact stable `1.0.0` stays `1.0.0` as the first stable release target. See `Get-SemanticReleaseNextVersion` for details.
+
 ## EXAMPLES
 
 ### Example 1
@@ -50,6 +56,7 @@ PreviousVersion : 0.11.1-preview01
 NewVersion      : 0.11.1-preview02
 Applied         : True
 Label           : Minor
+EffectiveLabel  : Minor
 PreviewRelease  : True
 CommitMessages  : {feat: add preview publish automation}
 CommitCount     : 1
@@ -69,9 +76,32 @@ PreviousVersion : 1.2.3
 NewVersion      : 1.2.4
 Applied         : True
 Label           : Patch
+EffectiveLabel  : Patch
 PreviewRelease  : False
 CommitMessages  : {fix: correct release workflow}
 CommitCount     : 1
+```
+
+### Example 3
+
+Run again when no commits follow the latest version tag.
+
+```powershell
+PS> Update-SemanticReleaseVersion -Path ./project.json -ProjectRoot . -Confirm:$false
+
+WARNING: No commits found since version tag '1.2.4'. project.json stays at 1.2.4.
+
+Path            : ./project.json
+Target          : project.json
+Key             : Version
+PreviousVersion : 1.2.4
+NewVersion      : 1.2.4
+Applied         : False
+Label           :
+EffectiveLabel  :
+PreviewRelease  : False
+CommitMessages  : {}
+CommitCount     : 0
 ```
 
 ## PARAMETERS
@@ -217,11 +247,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Object
 
-Returns an object that reports the target file, the previous version, the new version, whether the change was applied, the inferred release label, and the commit messages used for inference.
+Returns an object that reports the target file, the previous version, the new version, whether the change was applied, the inferred release label, the effective label that was applied (`EffectiveLabel`), and the commit messages used for inference.
 
 ## NOTES
 
-The cmdlet reads commit messages through Git, using the same commit-range detection rules as `Get-SemanticReleaseCommitMessage`.
+The cmdlet reads commit messages through Git, using the same commit-range detection rules as `Get-SemanticReleaseCommitMessage`. Only tags that look like semantic versions, such as `1.2.3` or `v1.2.3`, mark the start of the commit range.
 
 ## RELATED LINKS
 

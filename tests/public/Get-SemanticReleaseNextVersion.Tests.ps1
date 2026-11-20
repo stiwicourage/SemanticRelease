@@ -11,7 +11,6 @@ Describe 'Get-SemanticReleaseNextVersion' {
                 CurrentVersion = [semver]'1.2.3'
                 Label = 'Patch'
                 PreviewRelease = $false
-                StableRelease = $false
                 NewVersion = [semver]'1.2.4'
             }
         }
@@ -19,6 +18,22 @@ Describe 'Get-SemanticReleaseNextVersion' {
         $result = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'1.2.3') -Label Patch
 
         $result.NewVersion.ToString() | Should -Be '1.2.4'
-        Should -Invoke Get-SemanticReleaseVersionPlan -Times 1 -Exactly
+        Should -Invoke Get-SemanticReleaseVersionPlan -ParameterFilter { -not $PreviewRelease } -Times 1 -Exactly
+    }
+
+    It 'requests a preview plan with -Preview' {
+        Mock Get-SemanticReleaseVersionPlan { return [pscustomobject]@{ NewVersion = [semver]'1.2.4-preview' } }
+
+        $null = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'1.2.3') -Preview
+
+        Should -Invoke Get-SemanticReleaseVersionPlan -ParameterFilter { $PreviewRelease } -Times 1 -Exactly
+    }
+
+    It 'exposes one Preview switch for the release mode' {
+        $parameters = (Get-Command Get-SemanticReleaseNextVersion).Parameters
+
+        $parameters.Keys | Should -Not -Contain 'StableRelease'
+        $parameters['Preview'].SwitchParameter | Should -BeTrue
+        $parameters['Preview'].Aliases | Should -BeNullOrEmpty
     }
 }

@@ -20,8 +20,7 @@ Calculates the next semantic version from a current version and release label.
 ### __AllParameterSets
 
 ```
-Get-SemanticReleaseNextVersion [-CurrentVersion] <semver> [[-Label] <string>] [-PreviewRelease]
- [-StableRelease]
+Get-SemanticReleaseNextVersion [-CurrentVersion] <semver> [[-Label] <string>] [-Preview]
 ```
 
 ## ALIASES
@@ -30,7 +29,11 @@ This cmdlet has no aliases.
 
 ## DESCRIPTION
 
-Use this cmdlet to build the next semantic version plan for stable or preview releases.
+Use this cmdlet to build the next semantic version plan for stable or preview releases. Plans are stable by default; use `-Preview` for a preview release.
+
+When the current version is on `0.y.z` and the label is `Major`, stable plans keep the release on the initial-development line and plan the next minor version instead of jumping to `1.0.0`. The plan still reports the detected `Major` label, sets `EffectiveLabel` to `Minor`, and writes a warning about setting `1.0.0` manually once the software is stable. Preview plans are not remapped by this rule.
+
+When the current stable version is exactly `1.0.0`, it is treated as the manually selected first stable release target: fix, feature, and breaking-change labels still apply, but the planned stable version stays `1.0.0`. With `-Preview`, it still enters the next patch preview track (`1.0.1-preview`).
 
 Stable releases increment the requested version part, except when finalizing an existing prerelease for the same target label.
 Preview releases preserve existing prerelease targets and increment the preview label, or start a new preview from the next patch version when the current version is stable.
@@ -46,8 +49,8 @@ PS> Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'1.2.3') -Label Mino
 
 CurrentVersion : 1.2.3
 Label          : Minor
+EffectiveLabel : Minor
 PreviewRelease : False
-StableRelease  : False
 NewVersion     : 1.3.0
 ```
 
@@ -56,13 +59,29 @@ NewVersion     : 1.3.0
 Continue an existing preview release without changing the version parts.
 
 ```powershell
-PS> Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'1.2.3-preview01') -Label Patch -PreviewRelease
+PS> Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'1.2.3-preview01') -Label Patch -Preview
 
 CurrentVersion : 1.2.3-preview01
 Label          : Patch
+EffectiveLabel : Patch
 PreviewRelease : True
-StableRelease  : False
 NewVersion     : 1.2.3-preview02
+```
+
+### Example 3
+
+Keep a breaking change on the initial-development line.
+
+```powershell
+PS> Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'0.1.0') -Label Major
+
+WARNING: Major version zero (0.y.z) is for initial development, so SemanticRelease plans this breaking change as the next minor version instead of 1.0.0. Set 1.0.0 manually once the software is stable; after that, automatic major-version bumps work normally.
+
+CurrentVersion : 0.1.0
+Label          : Major
+EffectiveLabel : Minor
+PreviewRelease : False
+NewVersion     : 0.2.0
 ```
 
 ## PARAMETERS
@@ -109,30 +128,9 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -PreviewRelease
+### -Preview
 
-Indicates that the next version should be a preview release.
-
-```yaml
-Type: System.Management.Automation.SwitchParameter
-DefaultValue: ''
-SupportsWildcards: false
-Aliases: []
-ParameterSets:
-- Name: (All)
-  Position: Named
-  IsRequired: false
-  ValueFromPipeline: false
-  ValueFromPipelineByPropertyName: false
-  ValueFromRemainingArguments: false
-DontShow: false
-AcceptedValues: []
-HelpMessage: ''
-```
-
-### -StableRelease
-
-Indicates that the next version should be emitted without a prerelease label.
+Indicates that the next version should be a preview release. Without this switch, the plan is a stable release.
 
 ```yaml
 Type: System.Management.Automation.SwitchParameter
@@ -164,7 +162,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Management.Automation.PSCustomObject
 
-Returns a version-plan object with `CurrentVersion`, `Label`, `PreviewRelease`, `StableRelease`, and `NewVersion` properties.
+Returns a version-plan object with `CurrentVersion`, `Label`, `EffectiveLabel`, `PreviewRelease`, and `NewVersion` properties.
 
 ## NOTES
 

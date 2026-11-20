@@ -8,8 +8,13 @@ function Update-SemanticReleaseVersion {
     )
 
     $context = Get-SemanticReleaseVersionUpdateContext -Path $Path -ProjectRoot $ProjectRoot -Key $Key -PreviewRelease:$Preview
+    if (-not $context.HasCommits) {
+        Write-Warning (Get-SemanticReleaseNoCommitMessage -Context $context)
+        return Get-SemanticReleaseVersionUpdateResult -Context $context
+    }
+
     if (-not $PSCmdlet.ShouldProcess($context.Target, $context.Action)) {
-        return $context.WhatIfResult
+        return Get-SemanticReleaseVersionUpdateResult -Context $context
     }
 
     return Invoke-SemanticReleaseVersionUpdate -Context $context

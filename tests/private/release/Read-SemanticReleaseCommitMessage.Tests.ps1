@@ -103,4 +103,19 @@ Describe 'Read-SemanticReleaseCommitMessage' {
         $messages[0] | Should -Be ('feat: add x' + [Environment]::NewLine + 'body')
         $messages[1] | Should -Be 'fix: a bug'
     }
+
+    It 'uses a supplied range basis without detecting it again' {
+        function Get-SemanticReleaseCommitRangeBasis { param($ProjectRoot) $null = $ProjectRoot }
+        Mock Get-SemanticReleaseCommitRangeBasis {}
+        Mock Invoke-SemanticReleaseGitCommand {
+            return [pscustomobject]@{ ExitCode = 0; Output = @('fix: a bug', '', '--END-COMMIT--') }
+        }
+        $basis = [pscustomobject]@{ IsRepository = $true; HasVersionTag = $true; LastTag = 'v1.0.0'; RevisionRange = 'v1.0.0..HEAD' }
+
+        $messages = Read-SemanticReleaseCommitMessage -ProjectRoot '/repo' -CommitRangeBasis $basis
+
+        @($messages) | Should -Be @('fix: a bug')
+        Should -Invoke Get-SemanticReleaseCommitRangeBasis -Times 0
+        Should -Invoke Invoke-SemanticReleaseGitCommand -ParameterFilter { $Arguments -contains 'v1.0.0..HEAD' } -Times 1 -Exactly
+    }
 }

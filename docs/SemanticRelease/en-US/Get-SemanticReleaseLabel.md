@@ -89,7 +89,7 @@ Returns `Major`, `Minor`, or `Patch`.
 
 ## NOTES
 
-- The cmdlet recognizes both `BREAKING CHANGE` footers and Conventional Commit `!` markers as major-version triggers.
+- The cmdlet recognizes `BREAKING CHANGE:` and `BREAKING-CHANGE:` footers and Conventional Commit `!` markers as major-version triggers. Footer tokens must be uppercase and start a line, as the Conventional Commits specification requires, so prose such as `not a breaking change` does not trigger a major bump.
 - Messages are matched case-insensitively.
 
 ## RELATED LINKS

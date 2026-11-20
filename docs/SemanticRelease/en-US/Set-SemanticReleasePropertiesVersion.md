@@ -21,7 +21,7 @@ Updates a semantic version property in a Java-style `.properties` file using sem
 
 ```
 Set-SemanticReleasePropertiesVersion [-Path] <string> [[-Key] <string>] [[-Label] <string>]
- [[-ReleaseType] <string>] [-WhatIf] [-Confirm]
+ [-Preview] [-WhatIf] [-Confirm]
 ```
 
 ## ALIASES
@@ -34,6 +34,8 @@ Use this cmdlet to read a version-like property from a Java-style `.properties` 
 
 The cmdlet supports the common `key=value` and `key:value` property syntaxes, preserves surrounding whitespace on the updated line, and supports `ShouldProcess` for safe preview runs.
 
+On `0.y.z`, a stable `Major` bump is planned as the next minor version with a warning, and an exact stable `1.0.0` stays `1.0.0` as the first stable release target. See `Get-SemanticReleaseNextVersion` for details.
+
 ## EXAMPLES
 
 ### Example 1
@@ -41,7 +43,7 @@ The cmdlet supports the common `key=value` and `key:value` property syntaxes, pr
 Preview the next preview version for the `version` property in `gradle.properties`.
 
 ```powershell
-PS> Set-SemanticReleasePropertiesVersion -Path ./gradle.properties -ReleaseType Preview -WhatIf
+PS> Set-SemanticReleasePropertiesVersion -Path ./gradle.properties -Preview -WhatIf
 What if: Performing the operation "Set version to 0.1.1-preview01" on target "gradle.properties".
 ```
 
@@ -147,18 +149,18 @@ AcceptedValues: []
 HelpMessage: ''
 ```
 
-### -ReleaseType
+### -Preview
 
-Specifies how the cmdlet should emit the next version. Valid values are `Default`, `Preview`, and `Stable`.
+Indicates that the next version should be a preview release. Without this switch, the cmdlet writes a stable version.
 
 ```yaml
-Type: System.String
-DefaultValue: Default
+Type: System.Management.Automation.SwitchParameter
+DefaultValue: ''
 SupportsWildcards: false
 Aliases: []
 ParameterSets:
 - Name: (All)
-  Position: 3
+  Position: Named
   IsRequired: false
   ValueFromPipeline: false
   ValueFromPipelineByPropertyName: false
