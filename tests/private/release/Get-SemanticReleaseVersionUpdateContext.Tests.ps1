@@ -21,13 +21,14 @@ Describe 'Get-SemanticReleaseVersionUpdateContext' {
         }
         Mock Read-SemanticReleaseCommitMessage { return @('feat: add release automation') }
         Mock Resolve-SemanticReleaseVersionLabel { return 'Minor' }
-        Mock Get-SemanticReleaseVersionPlan { return [pscustomobject]@{ NewVersion = [semver]'1.2.3-preview02' } }
+        Mock Get-SemanticReleaseVersionPlan { return [pscustomobject]@{ NewVersion = [semver]'1.2.3-preview02'; EffectiveLabel = 'Minor' } }
 
         $context = Get-SemanticReleaseVersionUpdateContext -Path '/repo/gradle.properties' -ProjectRoot '/repo' -PreviewRelease
 
         $context.Format | Should -Be 'Properties'
         $context.Key | Should -Be 'version'
         $context.Label | Should -Be 'Minor'
+        $context.EffectiveLabel | Should -Be 'Minor'
         $context.PreviousVersion | Should -Be '1.2.3-preview01'
         $context.NewVersion | Should -Be '1.2.3-preview02'
         $context.CommitCount | Should -Be 1
@@ -39,7 +40,7 @@ Describe 'Get-SemanticReleaseVersionUpdateContext' {
         Mock Read-SemanticReleaseJsonData { return @{ Version = '1.2.3' } }
         Mock Read-SemanticReleaseCommitMessage { return @('fix: correct release docs') }
         Mock Resolve-SemanticReleaseVersionLabel { return 'Patch' }
-        Mock Get-SemanticReleaseVersionPlan { return [pscustomobject]@{ NewVersion = [semver]'1.2.4' } }
+        Mock Get-SemanticReleaseVersionPlan { return [pscustomobject]@{ NewVersion = [semver]'1.2.4'; EffectiveLabel = 'Minor' } }
 
         $context = Get-SemanticReleaseVersionUpdateContext -Path '/repo/project.json' -ProjectRoot '/repo'
 

@@ -16,10 +16,10 @@ function Invoke-SemanticReleaseVersionWriter {
 
     switch ($Context.Format) {
         'Json' {
-            return Set-SemanticReleaseJsonVersion -Path $Context.Path -Key $Context.Key -Label $Context.Label -ReleaseType $Context.ReleaseType -Confirm:$false
+            return Set-SemanticReleaseJsonVersion -Path $Context.Path -Key $Context.Key -Label $Context.EffectiveLabel -ReleaseType $Context.ReleaseType -Confirm:$false
         }
         'Properties' {
-            return Set-SemanticReleasePropertiesVersion -Path $Context.Path -Key $Context.Key -Label $Context.Label -ReleaseType $Context.ReleaseType -Confirm:$false
+            return Set-SemanticReleasePropertiesVersion -Path $Context.Path -Key $Context.Key -Label $Context.EffectiveLabel -ReleaseType $Context.ReleaseType -Confirm:$false
         }
         default {
             throw "Unsupported version update format '$($Context.Format)'."
@@ -42,6 +42,7 @@ function Get-SemanticReleaseVersionUpdateResult {
         NewVersion = $Context.NewVersion
         Applied = [bool]$Applied
         Label = $Context.Label
+        EffectiveLabel = $Context.EffectiveLabel
         PreviewRelease = [bool]$Context.PreviewRelease
         CommitMessages = @($Context.CommitMessages)
         CommitCount = $Context.CommitCount

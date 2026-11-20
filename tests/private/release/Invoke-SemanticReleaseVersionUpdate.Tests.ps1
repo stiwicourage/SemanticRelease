@@ -15,6 +15,7 @@ Describe 'Invoke-SemanticReleaseVersionUpdate' {
             Target = 'project.json'
             Key = 'Version'
             Label = 'Patch'
+            EffectiveLabel = 'Patch'
             ReleaseType = 'Default'
             PreviousVersion = '1.2.3'
             NewVersion = '1.2.4'
@@ -40,6 +41,7 @@ Describe 'Invoke-SemanticReleaseVersionUpdate' {
             Target = 'gradle.properties'
             Key = 'version'
             Label = 'Minor'
+            EffectiveLabel = 'Minor'
             ReleaseType = 'Preview'
             PreviousVersion = '1.2.3-preview01'
             NewVersion = '1.2.3-preview02'
@@ -56,6 +58,31 @@ Describe 'Invoke-SemanticReleaseVersionUpdate' {
         Should -Invoke Set-SemanticReleasePropertiesVersion -ParameterFilter { $Path -eq '/repo/gradle.properties' -and $Key -eq 'version' -and $Label -eq 'Minor' -and $ReleaseType -eq 'Preview' } -Times 1 -Exactly
     }
 
+    It 'writes the effective label so the detected label is reported but not reapplied' {
+        Mock Set-SemanticReleaseJsonVersion { return [pscustomobject]@{ Applied = $true } }
+
+        $context = [pscustomobject]@{
+            Format = 'Json'
+            Path = '/repo/project.json'
+            Target = 'project.json'
+            Key = 'Version'
+            Label = 'Major'
+            EffectiveLabel = 'Minor'
+            ReleaseType = 'Default'
+            PreviousVersion = '0.1.0'
+            NewVersion = '0.2.0'
+            PreviewRelease = $false
+            CommitMessages = @('feat!: replace public api')
+            CommitCount = 1
+        }
+
+        $result = Invoke-SemanticReleaseVersionUpdate -Context $context
+
+        $result.Label | Should -Be 'Major'
+        $result.EffectiveLabel | Should -Be 'Minor'
+        Should -Invoke Set-SemanticReleaseJsonVersion -ParameterFilter { $Label -eq 'Minor' } -Times 1 -Exactly
+    }
+
     It 'throws when the context format is not supported' {
         $context = [pscustomobject]@{
             Format = 'Xml'
@@ -63,6 +90,7 @@ Describe 'Invoke-SemanticReleaseVersionUpdate' {
             Target = 'version.xml'
             Key = 'Version'
             Label = 'Patch'
+            EffectiveLabel = 'Patch'
             ReleaseType = 'Default'
             PreviousVersion = '1.2.3'
             NewVersion = '1.2.4'

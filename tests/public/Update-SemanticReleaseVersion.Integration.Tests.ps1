@@ -11,6 +11,7 @@ Describe 'Update-SemanticReleaseVersion integration' {
         & git -C $script:repoPath init --quiet | Out-Null
         & git -C $script:repoPath config user.email 'semanticrelease@example.com'
         & git -C $script:repoPath config user.name 'Semantic Release Tests'
+        & git -C $script:repoPath config core.hooksPath (Join-Path $script:repoPath '.git/no-hooks')
     }
 
     AfterEach {
@@ -48,5 +49,20 @@ Describe 'Update-SemanticReleaseVersion integration' {
         $result.NewVersion | Should -Be '1.2.4'
         $result.Applied | Should -BeTrue
         $content.Version | Should -Be '1.2.4'
+    }
+
+    It 'keeps a breaking change on 0.y.z and warns once from the built module' {
+        $jsonPath = Join-Path $script:repoPath 'project.json'
+        Set-Content -LiteralPath $jsonPath -Value '{"Version":"0.1.0"}'
+
+        & git -C $script:repoPath add project.json
+        & git -C $script:repoPath commit --quiet -m 'feat!: replace public api'
+
+        $result = Update-SemanticReleaseVersion -Path $jsonPath -ProjectRoot $script:repoPath -Confirm:$false -WarningVariable warnings -WarningAction SilentlyContinue
+
+        $result.NewVersion | Should -Be '0.2.0'
+        $result.Label | Should -Be 'Major'
+        $result.EffectiveLabel | Should -Be 'Minor'
+        $warnings | Should -HaveCount 1
     }
 }

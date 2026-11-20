@@ -219,7 +219,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### System.Object
 
-Returns an object that reports the target file, the previous version, the new version, whether the change was applied, the inferred release label, and the commit messages used for inference.
+Returns an object that reports the target file, the previous version, the new version, whether the change was applied, the inferred release label, the effective label that was applied (`EffectiveLabel`), and the commit messages used for inference.
 
 ## NOTES
 

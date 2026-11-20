@@ -23,6 +23,7 @@ function Get-SemanticReleaseVersionUpdateContext {
         PreviousVersion = $fileContext.PreviousVersion
         NewVersion = $versionPlan.NewVersion.ToString()
         Label = $label
+        EffectiveLabel = $versionPlan.EffectiveLabel
         ReleaseType = $releaseOptions.ReleaseType
         PreviewRelease = [bool]$PreviewRelease
         CommitMessages = $commitMessages
