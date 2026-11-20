@@ -49,3 +49,39 @@ Describe 'Get-SemanticReleaseVersionPlan' {
         $plan.NewVersion.ToString() | Should -Be '1.0.0'
     }
 }
+
+Describe 'Test-SemanticReleaseShouldPreserveInitialStableReleaseTarget' {
+    It 'returns true for exact stable 1.0.0 without preview mode' {
+        Test-SemanticReleaseShouldPreserveInitialStableReleaseTarget -CurrentVersion ([semver]'1.0.0') | Should -BeTrue
+    }
+
+    It 'returns false when preview mode is requested' {
+        Test-SemanticReleaseShouldPreserveInitialStableReleaseTarget -CurrentVersion ([semver]'1.0.0') -PreviewRelease | Should -BeFalse
+    }
+
+    It 'returns false when the current version is already a prerelease' {
+        Test-SemanticReleaseShouldPreserveInitialStableReleaseTarget -CurrentVersion ([semver]'1.0.0-preview01') | Should -BeFalse
+    }
+
+    It 'returns false for other stable versions' {
+        Test-SemanticReleaseShouldPreserveInitialStableReleaseTarget -CurrentVersion ([semver]'1.0.1') | Should -BeFalse
+    }
+}
+
+Describe 'Get-SemanticReleaseVersionPlan for exact stable 1.0.0' {
+    It 'keeps 1.0.0 for <Scenario>' -ForEach @(
+        @{ Scenario = 'fix commits'; Label = 'Patch' }
+        @{ Scenario = 'feature commits'; Label = 'Minor' }
+        @{ Scenario = 'breaking commits'; Label = 'Major' }
+    ) {
+        $plan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]'1.0.0') -Label $Label
+
+        $plan.NewVersion.ToString() | Should -Be '1.0.0'
+    }
+
+    It 'still moves preview bumps to 1.0.1-preview' {
+        $plan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]'1.0.0') -Label Major -PreviewRelease
+
+        $plan.NewVersion.ToString() | Should -Be '1.0.1-preview'
+    }
+}

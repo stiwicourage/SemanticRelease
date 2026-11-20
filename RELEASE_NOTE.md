@@ -9,6 +9,8 @@ This file summarizes public cmdlet, CLI, configuration, and migration changes fo
 
 ### Changed
 
+- `Get-SemanticReleaseNextVersion` and `Update-SemanticReleaseVersion` keep an exact stable `1.0.0` at `1.0.0` for the first stable release, even when the detected history is fix, feature, or breaking-change based. Preview bumps from exact stable `1.0.0` still move to `1.0.1-preview`.
+
 ### Deprecated
 
 ### Removed

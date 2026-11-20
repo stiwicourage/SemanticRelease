@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- `Get-SemanticReleaseNextVersion` and `Update-SemanticReleaseVersion` now preserve an exact stable `1.0.0` as the first stable release target instead of auto-advancing it from inferred fix, feature, or breaking-change history.
+    - The detected semantic label is still reported, but the next stable release stays `1.0.0`.
+    - Preview bumps from exact stable `1.0.0` still enter the next patch preview track as `1.0.1-preview`.
+
 ### Deprecated
 
 ### Removed

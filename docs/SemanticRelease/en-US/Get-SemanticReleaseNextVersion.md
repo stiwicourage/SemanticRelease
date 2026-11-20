@@ -32,6 +32,8 @@ This cmdlet has no aliases.
 
 Use this cmdlet to build the next semantic version plan for stable or preview releases.
 
+When the current stable version is exactly `1.0.0`, it is treated as the manually selected first stable release target: fix, feature, and breaking-change labels still apply, but the planned stable version stays `1.0.0`. With `-PreviewRelease`, it still enters the next patch preview track (`1.0.1-preview`).
+
 Stable releases increment the requested version part, except when finalizing an existing prerelease for the same target label.
 Preview releases preserve existing prerelease targets and increment the preview label, or start a new preview from the next patch version when the current version is stable.
 

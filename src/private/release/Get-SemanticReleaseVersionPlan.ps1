@@ -29,6 +29,14 @@ function Get-SemanticReleaseVersionPartForPlan {
         [switch]$PreviewRelease
     )
 
+    if (Test-SemanticReleaseShouldPreserveInitialStableReleaseTarget -CurrentVersion $CurrentVersion -PreviewRelease:$PreviewRelease) {
+        return [pscustomobject]@{
+            Major = $CurrentVersion.Major
+            Minor = $CurrentVersion.Minor
+            Patch = $CurrentVersion.Patch
+        }
+    }
+
     if ($PreviewRelease) {
         if (-not [string]::IsNullOrWhiteSpace($CurrentVersion.PreReleaseLabel)) {
             return [pscustomobject]@{
@@ -42,4 +50,19 @@ function Get-SemanticReleaseVersionPartForPlan {
     }
 
     return Resolve-SemanticReleaseVersionPart -CurrentVersion $CurrentVersion -Label $Label
+}
+
+function Test-SemanticReleaseShouldPreserveInitialStableReleaseTarget {
+    [OutputType([bool])]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][semver]$CurrentVersion,
+        [switch]$PreviewRelease
+    )
+
+    if ($PreviewRelease -or -not [string]::IsNullOrWhiteSpace($CurrentVersion.PreReleaseLabel)) {
+        return $false
+    }
+
+    return $CurrentVersion.Major -eq 1 -and $CurrentVersion.Minor -eq 0 -and $CurrentVersion.Patch -eq 0
 }
