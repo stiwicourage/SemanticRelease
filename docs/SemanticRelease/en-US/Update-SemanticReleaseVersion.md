@@ -34,6 +34,8 @@ Use this cmdlet to read commit messages from the current Git repository, infer t
 
 `Update-SemanticReleaseVersion` supports top-level JSON version keys such as `project.json` and Java-style `.properties` version keys such as `gradle.properties`. Use `-Preview` to continue or seed preview versions without changing the stable release branch semantics.
 
+On `0.y.z`, a stable `Major` bump is planned as the next minor version with a warning, and an exact stable `1.0.0` stays `1.0.0` as the first stable release target. See `Get-SemanticReleaseNextVersion` for details.
+
 ## EXAMPLES
 
 ### Example 1

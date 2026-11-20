@@ -9,7 +9,7 @@ The initial module surface provides the reusable semantic-release core for Git-b
 - `Get-SemanticReleaseCommitRange` detects the last version tag and returns the commit-range basis.
 - `Get-SemanticReleaseCommitMessage` collects commit messages since the last tag, or from the full history when no tag exists.
 - `Get-SemanticReleaseLabel` infers the semantic-release label (`Major`, `Minor`, or `Patch`) from commit messages.
-- `Get-SemanticReleaseNextVersion` calculates the next semantic version, including preview and stable-release transitions.
+- `Get-SemanticReleaseNextVersion` calculates the next semantic version, including preview and stable-release transitions. On `0.y.z`, stable breaking-change bumps are planned as the next minor version with a warning; set `1.0.0` manually once the software is stable, and an exact stable `1.0.0` is then kept as the first stable release target.
 - `Set-SemanticReleaseJsonVersion` updates a top-level JSON version key with `ShouldProcess` support.
 - `Get-SemanticReleasePropertiesVersion` reads a version property from a Java-style `.properties` file without changing it.
 - `Set-SemanticReleasePropertiesVersion` updates a version property in Java-style `.properties` files such as `gradle.properties`.

@@ -15,4 +15,10 @@ Describe 'Get-SemanticReleaseNextVersion integration' {
 
         $plan.NewVersion.ToString() | Should -Be '1.0.0'
     }
+
+    It 'keeps a breaking change on the 0.y.z line from the built module' {
+        $plan = Get-SemanticReleaseNextVersion -CurrentVersion ([semver]'0.1.1-preview') -Label Major -StableRelease -WarningAction SilentlyContinue
+
+        $plan.NewVersion.ToString() | Should -Be '0.2.0'
+    }
 }

@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
     - The detected semantic label is still reported, but the next stable release stays `1.0.0`.
     - Preview bumps from exact stable `1.0.0` still enter the next patch preview track as `1.0.1-preview`.
 
+- Stable bumps on `0.y.z` now keep breaking changes on the initial-development line: a `Major` label is planned as the next minor version instead of `1.0.0`, matching NovaModuleTools.
+    - The detected `Major` label is still reported, the new `EffectiveLabel` plan property shows `Minor`, and a warning explains that `1.0.0` must be set manually once the software is stable.
+    - Preview bumps are not remapped by this rule, and major bumps from `1.y.z` and later are unchanged.
+
 ### Deprecated
 
 ### Removed

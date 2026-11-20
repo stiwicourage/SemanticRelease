@@ -34,6 +34,8 @@ Use this cmdlet to read a version-like property from a Java-style `.properties` 
 
 The cmdlet supports the common `key=value` and `key:value` property syntaxes, preserves surrounding whitespace on the updated line, and supports `ShouldProcess` for safe preview runs.
 
+On `0.y.z`, a stable `Major` bump is planned as the next minor version with a warning, and an exact stable `1.0.0` stays `1.0.0` as the first stable release target. See `Get-SemanticReleaseNextVersion` for details.
+
 ## EXAMPLES
 
 ### Example 1

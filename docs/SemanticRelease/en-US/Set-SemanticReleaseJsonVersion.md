@@ -34,6 +34,8 @@ Use this cmdlet to read a top-level version value from a JSON file, calculate th
 
 The cmdlet reads JSON with `ConvertFrom-Json -AsHashtable`, writes JSON with `ConvertTo-Json -Depth 20`, and supports `ShouldProcess` for safe preview runs.
 
+On `0.y.z`, a stable `Major` bump is planned as the next minor version with a warning, and an exact stable `1.0.0` stays `1.0.0` as the first stable release target. See `Get-SemanticReleaseNextVersion` for details.
+
 ## EXAMPLES
 
 ### Example 1

@@ -85,3 +85,50 @@ Describe 'Get-SemanticReleaseVersionPlan for exact stable 1.0.0' {
         $plan.NewVersion.ToString() | Should -Be '1.0.1-preview'
     }
 }
+
+Describe 'Get-SemanticReleaseVersionPlan for major version zero' {
+    It 'plans <CurrentVersion> with a breaking change as <Expected>' -ForEach @(
+        @{ CurrentVersion = '0.1.0'; Expected = '0.2.0' }
+        @{ CurrentVersion = '0.1.1-preview'; Expected = '0.2.0' }
+        @{ CurrentVersion = '0.2.0-preview01'; Expected = '0.2.0' }
+    ) {
+        $plan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]$CurrentVersion) -Label Major -StableRelease -WarningAction SilentlyContinue
+
+        $plan.NewVersion.ToString() | Should -Be $Expected
+        $plan.Label | Should -Be 'Major'
+        $plan.EffectiveLabel | Should -Be 'Minor'
+    }
+
+    It 'warns that 1.0.0 must be set manually when a breaking change is kept on 0.y.z' {
+        $null = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]'0.1.0') -Label Major -WarningVariable warnings -WarningAction SilentlyContinue
+
+        $warnings | Should -HaveCount 1
+        $warnings[0].Message | Should -Match 'Set 1\.0\.0 manually'
+    }
+
+    It 'keeps <Label> bumps unchanged on 0.y.z without warning' -ForEach @(
+        @{ Label = 'Minor'; Expected = '0.2.0' }
+        @{ Label = 'Patch'; Expected = '0.1.1' }
+    ) {
+        $plan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]'0.1.0') -Label $Label -WarningVariable warnings
+
+        $plan.NewVersion.ToString() | Should -Be $Expected
+        $plan.EffectiveLabel | Should -Be $Label
+        $warnings | Should -HaveCount 0
+    }
+
+    It 'keeps preview bumps on the next patch preview track without warning' {
+        $plan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]'0.1.0') -Label Major -PreviewRelease -WarningVariable warnings
+
+        $plan.NewVersion.ToString() | Should -Be '0.1.1-preview'
+        $warnings | Should -HaveCount 0
+    }
+
+    It 'still applies major bumps normally from 1.y.z' {
+        $plan = Get-SemanticReleaseVersionPlan -CurrentVersion ([semver]'1.2.3') -Label Major -WarningVariable warnings
+
+        $plan.NewVersion.ToString() | Should -Be '2.0.0'
+        $plan.EffectiveLabel | Should -Be 'Major'
+        $warnings | Should -HaveCount 0
+    }
+}

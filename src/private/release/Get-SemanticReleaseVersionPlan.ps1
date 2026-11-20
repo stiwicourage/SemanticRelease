@@ -8,13 +8,15 @@ function Get-SemanticReleaseVersionPlan {
         [switch]$StableRelease
     )
 
-    $versionPart = Get-SemanticReleaseVersionPartForPlan -CurrentVersion $CurrentVersion -Label $Label -PreviewRelease:$PreviewRelease
+    $effectiveLabel = Resolve-SemanticReleaseEffectiveLabel -CurrentVersion $CurrentVersion -Label $Label -PreviewRelease:$PreviewRelease
+    $versionPart = Get-SemanticReleaseVersionPartForPlan -CurrentVersion $CurrentVersion -Label $effectiveLabel -PreviewRelease:$PreviewRelease
     $releaseType = Resolve-SemanticReleasePreReleaseLabel -CurrentVersion $CurrentVersion -PreviewRelease:$PreviewRelease -StableRelease:$StableRelease
     $newVersion = [semver]::new($versionPart.Major, $versionPart.Minor, $versionPart.Patch, $releaseType, $null)
 
     return [pscustomobject]@{
         CurrentVersion = $CurrentVersion
         Label = $Label
+        EffectiveLabel = $effectiveLabel
         PreviewRelease = [bool]$PreviewRelease
         StableRelease = [bool]$StableRelease
         NewVersion = $newVersion
@@ -65,4 +67,49 @@ function Test-SemanticReleaseShouldPreserveInitialStableReleaseTarget {
     }
 
     return $CurrentVersion.Major -eq 1 -and $CurrentVersion.Minor -eq 0 -and $CurrentVersion.Patch -eq 0
+}
+
+function Resolve-SemanticReleaseEffectiveLabel {
+    [OutputType([string])]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][semver]$CurrentVersion,
+        [Parameter(Mandatory)][string]$Label,
+        [switch]$PreviewRelease
+    )
+
+    if (-not (Test-SemanticReleaseUsesMajorZeroFallback -CurrentVersion $CurrentVersion -Label $Label -PreviewRelease:$PreviewRelease)) {
+        return $Label
+    }
+
+    Write-Warning (Get-SemanticReleaseInitialDevelopmentMessage)
+    return 'Minor'
+}
+
+function Test-SemanticReleaseUsesMajorZeroFallback {
+    [OutputType([bool])]
+    [CmdletBinding()]
+    param(
+        [Parameter(Mandatory)][semver]$CurrentVersion,
+        [Parameter(Mandatory)][string]$Label,
+        [switch]$PreviewRelease
+    )
+
+    if ($PreviewRelease) {
+        return $false
+    }
+
+    if ($Label -ne 'Major') {
+        return $false
+    }
+
+    return $CurrentVersion.Major -eq 0
+}
+
+function Get-SemanticReleaseInitialDevelopmentMessage {
+    [OutputType([string])]
+    [CmdletBinding()]
+    param()
+
+    return 'Major version zero (0.y.z) is for initial development, so SemanticRelease plans this breaking change as the next minor version instead of 1.0.0. Set 1.0.0 manually once the software is stable; after that, automatic major-version bumps work normally.'
 }
