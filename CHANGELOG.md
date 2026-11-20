@@ -10,6 +10,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+### Deprecated
+
+### Removed
+
+### Fixed
+
+### Security
+
+## [0.2.0] - 2026-11-20
+
+### Changed
+
 - Breaking: all version commands now select the release mode with one `-Preview` switch, matching NovaModuleTools. Stable is the default.
     - `Set-SemanticReleaseJsonVersion` and `Set-SemanticReleasePropertiesVersion` replace `-ReleaseType Default|Preview|Stable` with `-Preview`.
     - `Get-SemanticReleaseNextVersion` replaces `-PreviewRelease` and `-StableRelease` with `-Preview`.
@@ -29,16 +41,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
     - The detected `Major` label is still reported, the new `EffectiveLabel` property on version plans and `Update-SemanticReleaseVersion` results shows `Minor`, and a warning explains that `1.0.0` must be set manually once the software is stable.
     - Preview bumps are not remapped by this rule, and major bumps from `1.y.z` and later are unchanged.
 
-### Deprecated
-
-### Removed
-
 ### Fixed
 
 - Breaking-change detection now follows the Conventional Commits specification: `BREAKING CHANGE:` and `BREAKING-CHANGE:` footers must be uppercase and start a line. Prose such as `docs: explain why this is not a breaking change` no longer triggers a major bump.
 - Commit-range detection only uses tags that look like semantic versions, such as `1.2.3` or `v1.2.3`. Other tags, such as `deploy-marker`, no longer hide earlier commits from the release-label calculation.
-
-### Security
 
 ## [0.1.0] - 2026-11-11
 
@@ -56,3 +62,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - GitHub workflows now call the shared `stiwicourage/powershell-ci` reusable workflows instead of local copies; the local `.github/actions/` and `scripts/build/ci/` helpers, `powershell.yml` and `dependency-review.yml` were replaced by `Security.yml` (adds CodeQL), and the scheduled test run is now daily.
+
