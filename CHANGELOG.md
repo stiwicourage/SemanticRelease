@@ -23,6 +23,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - `./scripts/build/Invoke-ScriptAnalyzerCI.ps1` now delegates to the shared `powershell-ci` analyzer with the CI settings, so local runs analyze `src/`, `scripts/`, `tests/`, and `run.ps1` like CI and fail on every severity, including `Information`. It needs a `powershell-ci` checkout next to the repository or `POWERSHELL_CI_PATH`.
+- CI now uses the shared `powershell-ci` workflows from release `0.5.0` instead of `0.1.1`.
+- Dependabot now checks GitHub Actions daily and proposes new `powershell-ci` tags without the default release cooldown.
 
 ### Removed
 
@@ -72,3 +74,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - GitHub workflows now call the shared `stiwicourage/powershell-ci` reusable workflows instead of local copies; the local `.github/actions/` and `scripts/build/ci/` helpers, `powershell.yml` and `dependency-review.yml` were replaced by `Security.yml` (adds CodeQL), and the scheduled test run is now daily.
+
+[Unreleased]: https://github.com/stiwicourage/SemanticRelease/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/stiwicourage/SemanticRelease/compare/0.2.0...0.3.0
+[0.2.0]: https://github.com/stiwicourage/SemanticRelease/compare/0.1.0...0.2.0
+[0.1.0]: https://github.com/stiwicourage/SemanticRelease/releases/tag/0.1.0
