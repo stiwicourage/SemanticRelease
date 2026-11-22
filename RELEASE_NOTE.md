@@ -19,6 +19,10 @@ This file summarizes public cmdlet, CLI, configuration, and migration changes fo
 
 ## [0.3.0] - 2026-11-22
 
+### Changed
+
+- No changes to the module commands. This release updates contributor tooling: the local ScriptAnalyzer wrapper now matches the shared CI analyzer, and CI uses `powershell-ci` 0.5.0.
+
 ## [0.2.0] - 2026-11-20
 
 ### Changed
@@ -48,3 +52,8 @@ This file summarizes public cmdlet, CLI, configuration, and migration changes fo
 - Added command help and mirrored automated tests for the initial module surface.
 - Added GitHub Actions release automation for stable publishes from `main` and prerelease publishes from `develop`.
 - Added the remaining NovaModuleTools-aligned GitHub validation workflows for tests, dependency review, and PSScriptAnalyzer.
+
+[Unreleased]: https://github.com/stiwicourage/SemanticRelease/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/stiwicourage/SemanticRelease/compare/0.2.0...0.3.0
+[0.2.0]: https://github.com/stiwicourage/SemanticRelease/compare/0.1.0...0.2.0
+[0.1.0]: https://github.com/stiwicourage/SemanticRelease/releases/tag/0.1.0
