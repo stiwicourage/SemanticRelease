@@ -1,7 +1,7 @@
 {
   "ProjectName": "SemanticRelease",
   "Description": "A PowerShell-native semantic release toolkit for automated versioning and release workflows based on Git history and Conventional Commits.",
-  "Version": "0.3.1",
+  "Version": "0.3.2-preview",
   "Preamble": [
     "Set-StrictMode -Version Latest",
     "$ErrorActionPreference = 'Stop'"
