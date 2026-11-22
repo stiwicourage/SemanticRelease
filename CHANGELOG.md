@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Security
 
+## [0.3.1] - 2026-11-22
+
 ## [0.3.0] - 2026-11-22
 
 ### Changed
@@ -75,7 +77,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - GitHub workflows now call the shared `stiwicourage/powershell-ci` reusable workflows instead of local copies; the local `.github/actions/` and `scripts/build/ci/` helpers, `powershell.yml` and `dependency-review.yml` were replaced by `Security.yml` (adds CodeQL), and the scheduled test run is now daily.
 
-[Unreleased]: https://github.com/stiwicourage/SemanticRelease/compare/0.3.0...HEAD
+[Unreleased]: https://github.com/stiwicourage/SemanticRelease/compare/0.3.1...HEAD
+[0.3.1]: https://github.com/stiwicourage/SemanticRelease/compare/0.3.0...0.3.1
 [0.3.0]: https://github.com/stiwicourage/SemanticRelease/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/stiwicourage/SemanticRelease/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/stiwicourage/SemanticRelease/releases/tag/0.1.0
