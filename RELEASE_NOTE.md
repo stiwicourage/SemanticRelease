@@ -17,6 +17,8 @@ This file summarizes public cmdlet, CLI, configuration, and migration changes fo
 
 ### Security
 
+## [0.3.0] - 2026-11-22
+
 ## [0.2.0] - 2026-11-20
 
 ### Changed
